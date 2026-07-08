@@ -41,7 +41,7 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
     error: errorAddCompany,
     data: dataAddCompany,
     fn: fnAddCompany,
-  } = useFetch(addNewCompany);
+  } = useFetch(addNewCompany as any, { method: "POST" });
 
   const onSubmit = async (data: FormData) => {
     if (upload.files.length === 0) return;
@@ -49,7 +49,7 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
   };
 
   useEffect(() => {
-    if (dataAddCompany && "length" in dataAddCompany && dataAddCompany.length > 0) {
+    if (Array.isArray(dataAddCompany) && dataAddCompany.length > 0) {
       fetchCompanies();
       reset();
       upload.setFiles([]);

@@ -201,7 +201,9 @@ const PostJob = () => {
           {errors.requirements && <p className="text-xs text-destructive">{errors.requirements.message}</p>}
         </div>
 
-        {errorCreateJob?.message && <p className="text-sm text-destructive">{errorCreateJob.message}</p>}
+        {(errorCreateJob as { message?: string } | null)?.message && (
+          <p className="text-sm text-destructive">{(errorCreateJob as { message: string }).message}</p>
+        )}
 
         {loadingCreateJob && (
           <BarLoader

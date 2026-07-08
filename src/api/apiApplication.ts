@@ -1,7 +1,7 @@
 import { supabaseClient, supabaseUrl } from "../utils/supabase";
 
 // - Apply to job ( candidate )
-export async function applyToJob(token, _, jobData) {
+export async function applyToJob(token: string, _: unknown, jobData: Record<string, unknown>) {
   const supabase = await supabaseClient(token);
 
   const random = Math.floor(Math.random() * 90000);
@@ -32,7 +32,7 @@ export async function applyToJob(token, _, jobData) {
 }
 
 // - Edit Application Status ( recruiter )
-export async function updateApplicationStatus(token, { job_id }, status) {
+export async function updateApplicationStatus(token: string, { job_id }: { job_id: unknown }, status: unknown) {
   const supabase = await supabaseClient(token);
   const { data, error } = await supabase.from("applications").update({ status }).eq("job_id", job_id).select();
 
@@ -44,7 +44,7 @@ export async function updateApplicationStatus(token, { job_id }, status) {
   return data;
 }
 
-export async function getApplications(token, { user_id }) {
+export async function getApplications(token: string, { user_id }: { user_id: unknown }) {
   const supabase = await supabaseClient(token);
   const { data, error } = await supabase
     .from("applications")

@@ -56,7 +56,7 @@ export function ApplyJobDrawer({ user, job, fetchJob, applied = false }: ApplyJo
     resolver: zodResolver(schema),
   });
 
-  const { loading: loadingApply, error: errorApply, fn: fnApply } = useFetch(applyToJob);
+  const { loading: loadingApply, error: errorApply, fn: fnApply } = useFetch(applyToJob as any, { method: "POST" });
 
   const errorMessage = errorApply
     ? typeof errorApply === "string"

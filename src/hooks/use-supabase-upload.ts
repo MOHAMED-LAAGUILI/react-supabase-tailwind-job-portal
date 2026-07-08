@@ -123,7 +123,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
         : files;
 
     const supabaseAccessToken = await session?.getToken({ template: "supabase" });
-    const supabase = await supabaseClient(supabaseAccessToken);
+    const supabase = await supabaseClient(supabaseAccessToken as string);
 
     const responses = await Promise.all(
       filesToUpload.map(async file => {

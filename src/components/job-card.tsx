@@ -31,7 +31,14 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
     job_id: job.id,
   });
 
-  const { loading: loadingSavedJob, data: savedJob, fn: fnSavedJob } = useFetch(saveJob);
+  const {
+    loading: loadingSavedJob,
+    data: savedJob,
+    fn: fnSavedJob,
+  } = useFetch(saveJob as any, {
+    job_id: job.id,
+    user_id: user?.id,
+  });
 
   const handleSaveJob = async () => {
     await fnSavedJob({
@@ -47,7 +54,7 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
   };
 
   useEffect(() => {
-    if (savedJob !== undefined) setSaved(savedJob?.length > 0);
+    if (savedJob !== undefined) setSaved(Array.isArray(savedJob) && savedJob.length > 0);
   }, [savedJob]);
 
   const daysAgo = Math.floor((Date.now() - new Date(job.created_at).getTime()) / (1000 * 60 * 60 * 24));
@@ -124,7 +131,7 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
             size="icon"
             className="shrink-0"
             onClick={handleSaveJob}
-            disabled={loadingSavedJob}
+            disabled={!!loadingSavedJob}
           >
             {saved ? (
               <Heart

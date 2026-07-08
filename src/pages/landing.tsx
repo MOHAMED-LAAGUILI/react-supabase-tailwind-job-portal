@@ -14,8 +14,7 @@ import { TESTIMONIALS_1, TESTIMONIALS_2 } from "../data/testimonials";
 import { AnimatedContainer } from "../layout/animated-container";
 
 const LandingPage = () => {
-  const { user, isSignedIn } = useUser();
-  const isCandidate = user?.unsafeMetadata?.role === "candidate";
+  const { isSignedIn } = useUser();
   const navigate = useNavigate();
   return (
     <AnimatedContainer className="flex flex-col gap-10 sm:gap-20 py-10 sm:py-20">

@@ -19,7 +19,7 @@ const JobPage = () => {
     loading: loadingJob,
     data: job,
     fn: fnJob,
-  } = useFetch<Job>(getSingleJob, {
+  } = useFetch<Job>(getSingleJob as any, {
     job_id: id,
   });
 
@@ -27,11 +27,11 @@ const JobPage = () => {
     if (isLoaded) fnJob();
   }, [isLoaded]);
 
-  const { loading: loadingHiringStatus, fn: fnHiringStatus } = useFetch(updateHiringStatus, {
+  const { loading: loadingHiringStatus, fn: fnHiringStatus } = useFetch(updateHiringStatus as any, {
     job_id: id,
   });
 
-  const handleStatusChange = (value: string) => {
+  const handleStatusChange = (value: string | null) => {
     const isOpen = value === "open";
     fnHiringStatus(isOpen).then(() => fnJob());
   };
@@ -149,10 +149,10 @@ const JobPage = () => {
       {!isRecruiter && (
         <div className="flex justify-center sm:justify-start">
           <ApplyJobDrawer
-            job={job}
-            user={user}
+            job={job as any}
+            user={user as any}
             fetchJob={fnJob}
-            applied={hasApplied}
+            applied={hasApplied as any}
           />
         </div>
       )}
@@ -165,7 +165,7 @@ const JobPage = () => {
             {job.applications.map(application => (
               <ApplicationCard
                 key={application.id}
-                application={application}
+                application={application as any}
               />
             ))}
           </div>

@@ -25,7 +25,7 @@ const JobListing = () => {
     loading: loadingJobs,
     data: jobs,
     fn: fnJobs,
-  } = useFetch<Job[]>(getJobs, {
+  } = useFetch<Job[]>(getJobs as any, {
     company_id,
     location,
     searchQuery,

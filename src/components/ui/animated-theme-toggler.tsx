@@ -175,7 +175,7 @@ export const AnimatedThemeToggler = ({
       } else {
         setInternalIsDark(newTheme);
         localStorage.setItem("theme", newTheme ? "dark" : "light");
-        setTheme(newTheme);
+        setTheme(newTheme ? "dark" : "light");
       }
     };
 
