@@ -2,9 +2,9 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 
 import LandingPage from "./pages/landing";
-import ProtectedRoute from "./components/protected-route";
+import ProtectedRoute from "./layout/protected-route";
 import AppLayout from "./layout/app-layout";
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider } from "./layout/theme-provider";
 import Onboarding from "./pages/onboarding";
 import JobListing from "./pages/jobListing";
 import PostJob from "./pages/post-job";

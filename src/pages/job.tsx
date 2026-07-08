@@ -17,16 +17,17 @@ import ApplicationCard from "../components/application-card";
 
 import useFetch from "../hooks/useFetch";
 import { getSingleJob, updateHiringStatus } from "../api/apiJobs";
+import type { Job } from "../types";
 
 const JobPage = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const { isLoaded, user } = useUser();
 
   const {
     loading: loadingJob,
     data: job,
     fn: fnJob,
-  } = useFetch(getSingleJob, {
+  } = useFetch<Job>(getSingleJob, {
     job_id: id,
   });
 
@@ -41,7 +42,7 @@ const JobPage = () => {
     }
   );
 
-  const handleStatusChange = (value) => {
+  const handleStatusChange = (value: string) => {
     const isOpen = value === "open";
     fnHiringStatus(isOpen).then(() => fnJob());
   };
@@ -105,14 +106,14 @@ const JobPage = () => {
       </h2>
       <MDEditor.Markdown
         source={job?.requirements}
-        className="bg-transparent sm:text-lg" // add global ul styles - tutorial
+        className="bg-transparent sm:text-lg"
       />
       {job?.recruiter_id !== user?.id && (
         <ApplyJobDrawer
           job={job}
           user={user}
           fetchJob={fnJob}
-          applied={job?.applications?.find((ap) => ap.candidate_id === user.id)}
+          applied={job?.applications?.find((ap) => ap.candidate_id === user?.id)}
         />
       )}
       {loadingHiringStatus && <BarLoader width={"100%"} color="#36d7b7" />}

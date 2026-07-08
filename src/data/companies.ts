@@ -14,11 +14,7 @@ export const companies = [
     "path": "/companies/google.webp",
     "id": 3
   },
-  {
-    "name": "ibm",
-    "path": "/companies/ibm.svg",
-    "id": 4
-  },
+
   {
     "name": "meta",
     "path": "/companies/meta.svg",

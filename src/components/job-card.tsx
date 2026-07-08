@@ -1,5 +1,4 @@
-/* eslint-disable react/prop-types */
-import { Heart, MapPinIcon, Trash2Icon } from "lucide-react";
+import { Heart, MapPinIcon, Trash2Icon, Briefcase, Clock } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -15,29 +14,39 @@ import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { BarLoader } from "react-spinners";
 
+interface JobCardProps {
+  job: {
+    id: number;
+    title: string;
+    description: string;
+    location: string;
+    company: { name: string; logo_url: string };
+    saved: { id: number }[];
+    created_at: string;
+  };
+  savedInit?: boolean;
+  onJobAction?: () => void;
+  isMyJob?: boolean;
+}
+
 const JobCard = ({
   job,
   savedInit = false,
   onJobAction = () => {},
   isMyJob = false,
-}) => {
+}: JobCardProps) => {
   const [saved, setSaved] = useState(savedInit);
-
   const { user } = useUser();
 
   const { loading: loadingDeleteJob, fn: fnDeleteJob } = useFetch(deleteJob, {
     job_id: job.id,
   });
 
-  const {
-    loading: loadingSavedJob,
-    data: savedJob,
-    fn: fnSavedJob,
-  } = useFetch(saveJob);
+  const { loading: loadingSavedJob, data: savedJob, fn: fnSavedJob } = useFetch(saveJob);
 
   const handleSaveJob = async () => {
     await fnSavedJob({
-      user_id: user.id,
+      user_id: user?.id,
       job_id: job.id,
     });
     onJobAction();
@@ -52,51 +61,79 @@ const JobCard = ({
     if (savedJob !== undefined) setSaved(savedJob?.length > 0);
   }, [savedJob]);
 
+  const daysAgo = Math.floor(
+    (Date.now() - new Date(job.created_at).getTime()) / (1000 * 60 * 60 * 24)
+  );
+
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col group hover:shadow-md transition-shadow">
       {loadingDeleteJob && (
         <BarLoader className="mt-4" width={"100%"} color="#36d7b7" />
       )}
-      <CardHeader className="flex">
-        <CardTitle className="flex justify-between font-bold">
-          {job.title}
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-3">
+          {job.company && (
+            <img
+              src={job.company.logo_url}
+              alt={job.company.name}
+              className="h-10 w-10 rounded-lg object-contain border bg-background shrink-0"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "";
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+          )}
+          <CardTitle className="font-semibold text-base leading-snug flex-1">
+            {job.title}
+          </CardTitle>
           {isMyJob && (
             <Trash2Icon
-              fill="red"
-              size={18}
-              className="text-red-300 cursor-pointer"
+              size={16}
+              className="text-muted-foreground hover:text-destructive cursor-pointer shrink-0 mt-1 transition-colors"
               onClick={handleDeleteJob}
             />
           )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4 flex-1">
-        <div className="flex justify-between">
-          {job.company && <img src={job.company.logo_url} className="h-6" />}
-          <div className="flex gap-2 items-center">
-            <MapPinIcon size={15} /> {job.location}
-          </div>
         </div>
-        <hr />
-        {job.description.substring(0, job.description.indexOf("."))}.
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3 flex-1 pb-3">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <MapPinIcon size={14} />
+            {job.location}
+          </span>
+          {job.company && (
+            <span className="flex items-center gap-1.5">
+              <Briefcase size={14} />
+              {job.company.name}
+            </span>
+          )}
+          <span className="flex items-center gap-1.5">
+            <Clock size={14} />
+            {daysAgo === 0 ? "Today" : `${daysAgo}d ago`}
+          </span>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+          {job.description.substring(0, job.description.indexOf("."))}.
+        </p>
       </CardContent>
-      <CardFooter className="flex gap-2">
+      <CardFooter className="flex gap-2 pt-0">
         <Link to={`/job/${job.id}`} className="flex-1">
-          <Button variant="secondary" className="w-full">
-            More Details
+          <Button variant="default" size="sm" className="w-full text-xs">
+            View Details
           </Button>
         </Link>
         {!isMyJob && (
           <Button
             variant="outline"
-            className="w-15"
+            size="icon"
+            className="shrink-0"
             onClick={handleSaveJob}
             disabled={loadingSavedJob}
           >
             {saved ? (
-              <Heart size={20} fill="red" stroke="red" />
+              <Heart size={16} fill="hsl(var(--destructive))" stroke="hsl(var(--destructive))" />
             ) : (
-              <Heart size={20} />
+              <Heart size={16} />
             )}
           </Button>
         )}

@@ -18,6 +18,8 @@ import {
 
 import { getCompanies } from "../api/apiCompanies";
 import { getJobs } from "../api/apiJobs";
+import type { Job, Company } from "../types";
+import { Search, MapPin, Building2, X } from "lucide-react";
 
 const JobListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,26 +28,20 @@ const JobListing = () => {
 
   const { isLoaded } = useUser();
 
-  const {
-    // loading: loadingCompanies,
-    data: companies,
-    fn: fnCompanies,
-  } = useFetch(getCompanies);
+  const { data: companies, fn: fnCompanies } = useFetch<Company[]>(getCompanies);
 
   const {
     loading: loadingJobs,
     data: jobs,
     fn: fnJobs,
-  } = useFetch(getJobs, {
+  } = useFetch<Job[]>(getJobs, {
     location,
     company_id,
     searchQuery,
   });
 
   useEffect(() => {
-    if (isLoaded) {
-      fnCompanies();
-    }
+    if (isLoaded) fnCompanies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded]);
 
@@ -54,13 +50,14 @@ const JobListing = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded, location, company_id, searchQuery]);
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let formData = new FormData(e.target);
-
+    const formData = new FormData(e.target as HTMLFormElement);
     const query = formData.get("search-query");
-    if (query) setSearchQuery(query);
+    if (query) setSearchQuery(String(query));
   };
+
+  const hasActiveFilters = searchQuery || location || company_id;
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -73,91 +70,118 @@ const JobListing = () => {
   }
 
   return (
-    <div className="">
-      <h1 className="gradient-title font-extrabold text-6xl sm:text-7xl text-center pb-8">
-        Latest Jobs
-      </h1>
+    <div className="py-6">
+      <div className="text-center mb-8">
+        <h1 className="gradient-title font-extrabold text-5xl sm:text-6xl lg:text-7xl tracking-tight pb-2">
+          Latest Jobs
+        </h1>
+        <p className="text-muted-foreground text-sm sm:text-base">
+          Find your next opportunity from {jobs?.length ?? 0} active listings
+        </p>
+      </div>
+
       <form
         onSubmit={handleSearch}
-        className="h-14 flex flex-row w-full gap-2 items-center mb-3"
+        className="flex flex-wrap items-center gap-1.5 mb-6"
       >
-        <Input
-          type="text"
-          placeholder="Search Jobs by Title.."
-          name="search-query"
-          className="h-full flex-1  px-4 text-md"
-        />
-        <Button type="submit" className="h-full sm:w-28" variant="blue">
-          Search
-        </Button>
-      </form>
+        <div className="relative flex-1 min-w-[160px]">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <Input
+            type="text"
+            placeholder="Search jobs by title..."
+            name="search-query"
+            defaultValue={searchQuery}
+            className="h-10 pl-9 pr-3 text-sm"
+          />
+        </div>
 
-      <div className="flex flex-col sm:flex-row gap-2">
-        <Select value={location} onValueChange={(value) => setLocation(value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Filter by Location" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {State.getStatesOfCountry("IN").map(({ name }) => {
-                return (
+        <div className="relative w-[130px]">
+          <MapPin size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <Select value={location} onValueChange={(value) => setLocation(value ?? "")}>
+            <SelectTrigger className="h-10 pl-9 text-sm">
+              <SelectValue placeholder="Location" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {State.getStatesOfCountry("IN").map(({ name }) => (
                   <SelectItem key={name} value={name}>
                     {name}
                   </SelectItem>
-                );
-              })}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-        <Select
-          value={company_id}
-          onValueChange={(value) => setCompany_id(value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Filter by Company" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {companies?.map(({ name, id }) => {
-                return (
-                  <SelectItem key={name} value={id}>
+        <div className="relative w-[140px]">
+          <Building2 size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <Select
+            value={company_id}
+            onValueChange={(value) => setCompany_id(value ?? "")}
+          >
+            <SelectTrigger className="h-10 pl-9 text-sm">
+              <SelectValue placeholder="Company" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {companies?.map(({ name, id }) => (
+                  <SelectItem key={name} value={String(id)}>
                     {name}
                   </SelectItem>
-                );
-              })}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Button
-          className="sm:w-1/2"
-          variant="destructive"
-          onClick={clearFilters}
-        >
-          Clear Filters
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button type="submit" className="h-10 px-3 gap-1.5 text-sm shrink-0">
+          <Search size={15} />
+          Search
         </Button>
-      </div>
+
+        {hasActiveFilters && (
+          <Button
+            variant="outline"
+            onClick={clearFilters}
+            className="h-10 px-3 gap-1.5 text-sm text-destructive border-destructive/30 hover:bg-destructive/10 shrink-0"
+          >
+            <X size={15} />
+            Clear
+          </Button>
+        )}
+      </form>
 
       {loadingJobs && (
-        <BarLoader className="mt-4" width={"100%"} color="#36d7b7" />
+        <div className="mt-4">
+          <BarLoader width={"100%"} color="#36d7b7" />
+        </div>
       )}
 
       {loadingJobs === false && (
-        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <>
           {jobs?.length ? (
-            jobs.map((job) => {
-              return (
+            <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {jobs.map((job) => (
                 <JobCard
                   key={job.id}
                   job={job}
                   savedInit={job?.saved?.length > 0}
                 />
-              );
-            })
+              ))}
+            </div>
           ) : (
-            <div>No Jobs Found 😢</div>
+            <div className="mt-20 flex flex-col items-center gap-3 text-muted-foreground">
+              <Search size={40} strokeWidth={1} />
+              <p className="text-lg font-medium">No jobs found</p>
+              <p className="text-sm">Try adjusting your search or filters</p>
+              {hasActiveFilters && (
+                <Button variant="outline" onClick={clearFilters} className="mt-2">
+                  Clear all filters
+                </Button>
+              )}
+            </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );

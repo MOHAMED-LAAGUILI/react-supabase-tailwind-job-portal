@@ -7,16 +7,16 @@ import {
   SignIn,
   useUser,
 } from "@clerk/clerk-react";
-import { Button } from "./ui/button";
-import { BriefcaseBusiness, Heart, PenBox, Moon, Sun } from "lucide-react";
-import { useTheme } from "./theme-provider";
+import { Button } from "../components/ui/button";
+import { BriefcaseBusiness, Heart, PenBox, LogIn } from "lucide-react";
+import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
+import { Logo } from "../components/logo";
 
 const Header = () => {
   const [showSignIn, setShowSignIn] = useState(false);
 
   const [search, setSearch] = useSearchParams();
   const { user } = useUser();
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     if (search.get("sign-in")) {
@@ -24,7 +24,7 @@ const Header = () => {
     }
   }, [search]);
 
-  const handleOverlayClick = (e) => {
+  const handleOverlayClick = (e: any) => {
     if (e.target === e.currentTarget) {
       setShowSignIn(false);
       setSearch({});
@@ -33,21 +33,15 @@ const Header = () => {
 
   return (
     <>
-      <nav className="py-4 px-4 md:px-8 lg:px-16 flex justify-between items-center max-w-7xl mx-auto">
-        <Link to="/">
-          <img src={theme === "dark" ? "/logo.png" : "/logo-dark.png"} className="h-20" alt="Hirrd Logo" />
-        </Link>
+    <header className="sticky top-0 z-30 border-b bg-background/70 backdrop-blur-lg">
+      <nav className="py-1 px-4 md:px-8 lg:px-16 flex justify-between items-center max-w-7xl mx-auto">
+        <Logo className="h-14" />
+        
 
-        <div className="flex gap-8 items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-          </Button>
+        <div className="flex gap-4 items-center">
           <SignedOut>
-            <Button variant="outline" onClick={() => setShowSignIn(true)}>
+            <Button variant="outline" onClick={() => setShowSignIn(true)} className="gap-2">
+              <LogIn size={16} />
               Login
             </Button>
           </SignedOut>
@@ -60,6 +54,9 @@ const Header = () => {
                 </Button>
               </Link>
             )}
+          </SignedIn>
+          <AnimatedThemeToggler />
+          <SignedIn>
             <UserButton
               appearance={{
                 elements: {
@@ -84,6 +81,8 @@ const Header = () => {
           </SignedIn>
         </div>
       </nav>
+
+    </header>
 
       {showSignIn && (
         <div
