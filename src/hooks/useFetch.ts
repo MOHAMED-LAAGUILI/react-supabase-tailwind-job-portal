@@ -29,7 +29,7 @@ const useFetch = <T, O = Record<string, unknown>>(
     }
   };
 
-  return { data, loading, error, fn };
+  return { data, error, fn, loading };
 };
 
 export default useFetch;

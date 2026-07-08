@@ -1,37 +1,31 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../components/ui/dialog";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Building2, Upload, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BarLoader } from "react-spinners";
-import { useEffect, useState } from "react";
-import useFetch from "../hooks/useFetch";
+import { z } from "zod";
 import { addNewCompany } from "../api/apiCompanies";
-import { Building2, Upload, X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { useSupabaseUpload } from "../hooks/use-supabase-upload";
+import useFetch from "../hooks/useFetch";
+import { Dropzone, DropzoneEmptyState } from "./dropzone";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 const schema = z.object({
   name: z.string().min(1, { message: "Company name is required" }),
-  logo: z
-    .any()
-    .refine(
-      (file) =>
-        file[0] &&
-        (file[0].type === "image/png" || file[0].type === "image/jpeg"),
-      { message: "Only PNG and JPEG images are allowed" }
-    ),
 });
 
 type FormData = z.infer<typeof schema>;
 
 const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) => {
   const [open, setOpen] = useState(false);
+
+  const upload = useSupabaseUpload({
+    allowedMimeTypes: ["image/png", "image/jpeg"],
+    bucketName: "company-logo",
+    maxFiles: 1,
+  });
 
   const {
     register,
@@ -50,23 +44,26 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
   } = useFetch(addNewCompany);
 
   const onSubmit = async (data: FormData) => {
-    fnAddCompany({ ...data, logo: data.logo[0] });
+    if (upload.files.length === 0) return;
+    fnAddCompany({ ...data, logo: upload.files[0] });
   };
 
   useEffect(() => {
-    if (dataAddCompany?.length > 0) {
+    if (dataAddCompany && "length" in dataAddCompany && dataAddCompany.length > 0) {
       fetchCompanies();
       reset();
+      upload.setFiles([]);
       setOpen(false);
     }
   }, [loadingAddCompany]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button type="button" variant="outline" size="icon" className="shrink-0">
-          <Building2 size={16} />
-        </Button>
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <DialogTrigger className="inline-flex items-center justify-center shrink-0 h-10 w-10 rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer">
+        <Building2 size={16} />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -76,36 +73,61 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
         <form className="flex flex-col gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Company Name</label>
-            <Input placeholder="e.g. Acme Corp" {...register("name")} />
-            {errors.name && (
-              <p className="text-xs text-destructive">{errors.name.message}</p>
-            )}
+            <Input
+              placeholder="e.g. Acme Corp"
+              {...register("name")}
+            />
+            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Company Logo</label>
-            <Input
-              type="file"
-              accept="image/png, image/jpeg"
-              className="file:text-muted-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium"
-              {...register("logo")}
-            />
-            {errors.logo && (
-              <p className="text-xs text-destructive">{errors.logo.message}</p>
-            )}
+            <Dropzone
+              className="w-full"
+              {...upload}
+            >
+              <DropzoneEmptyState />
+              {upload.files.length > 0 && (
+                <div className="mt-3 flex items-center justify-center">
+                  <div className="relative inline-flex">
+                    <img
+                      src={upload.files[0].preview}
+                      alt="Logo preview"
+                      className="h-20 w-20 rounded-lg border object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        upload.setFiles([]);
+                      }}
+                      className="absolute -top-2 -right-2 rounded-full bg-background border p-0.5 text-muted-foreground hover:text-foreground cursor-pointer"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </Dropzone>
           </div>
 
-          {errorAddCompany?.message && (
-            <p className="text-sm text-destructive">{errorAddCompany.message}</p>
+          {(errorAddCompany as { message?: string } | null)?.message && (
+            <p className="text-sm text-destructive">{(errorAddCompany as { message: string }).message}</p>
           )}
 
-          {loadingAddCompany && <BarLoader width={"100%"} color="#36d7b7" />}
+          {loadingAddCompany && (
+            <BarLoader
+              width={"100%"}
+              color="#36d7b7"
+            />
+          )}
         </form>
 
         <div className="mt-6 flex flex-col-reverse sm:flex-row gap-2">
           <Button
             type="button"
             onClick={handleSubmit(onSubmit)}
+            disabled={upload.files.length === 0}
             className="gap-2 flex-1"
           >
             <Upload size={15} />

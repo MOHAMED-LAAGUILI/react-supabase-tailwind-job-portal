@@ -1,18 +1,12 @@
-import { Heart, MapPinIcon, Trash2Icon, Briefcase, Clock } from "lucide-react";
-import { Button } from "./ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Link } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
-import { deleteJob, saveJob } from "../api/apiJobs";
 import { useUser } from "@clerk/clerk-react";
+import { Briefcase, Clock, Heart, MapPinIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { BarLoader } from "react-spinners";
+import { deleteJob, saveJob } from "../api/apiJobs";
+import useFetch from "../hooks/useFetch";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 
 interface JobCardProps {
   job: {
@@ -29,12 +23,7 @@ interface JobCardProps {
   isMyJob?: boolean;
 }
 
-const JobCard = ({
-  job,
-  savedInit = false,
-  onJobAction = () => {},
-  isMyJob = false,
-}: JobCardProps) => {
+const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = false }: JobCardProps) => {
   const [saved, setSaved] = useState(savedInit);
   const { user } = useUser();
 
@@ -46,8 +35,8 @@ const JobCard = ({
 
   const handleSaveJob = async () => {
     await fnSavedJob({
-      user_id: user?.id,
       job_id: job.id,
+      user_id: user?.id,
     });
     onJobAction();
   };
@@ -61,14 +50,16 @@ const JobCard = ({
     if (savedJob !== undefined) setSaved(savedJob?.length > 0);
   }, [savedJob]);
 
-  const daysAgo = Math.floor(
-    (Date.now() - new Date(job.created_at).getTime()) / (1000 * 60 * 60 * 24)
-  );
+  const daysAgo = Math.floor((Date.now() - new Date(job.created_at).getTime()) / (1000 * 60 * 60 * 24));
 
   return (
     <Card className="flex flex-col group hover:shadow-md transition-shadow">
       {loadingDeleteJob && (
-        <BarLoader className="mt-4" width={"100%"} color="#36d7b7" />
+        <BarLoader
+          className="mt-4"
+          width={"100%"}
+          color="#36d7b7"
+        />
       )}
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
@@ -77,15 +68,13 @@ const JobCard = ({
               src={job.company.logo_url}
               alt={job.company.name}
               className="h-10 w-10 rounded-lg object-contain border bg-background shrink-0"
-              onError={(e) => {
+              onError={e => {
                 (e.target as HTMLImageElement).src = "";
                 (e.target as HTMLImageElement).style.display = "none";
               }}
             />
           )}
-          <CardTitle className="font-semibold text-base leading-snug flex-1">
-            {job.title}
-          </CardTitle>
+          <CardTitle className="font-semibold text-base leading-snug flex-1">{job.title}</CardTitle>
           {isMyJob && (
             <Trash2Icon
               size={16}
@@ -117,8 +106,15 @@ const JobCard = ({
         </p>
       </CardContent>
       <CardFooter className="flex gap-2 pt-0">
-        <Link to={`/job/${job.id}`} className="flex-1">
-          <Button variant="default" size="sm" className="w-full text-xs">
+        <Link
+          to={`/job/${job.id}`}
+          className="flex-1"
+        >
+          <Button
+            variant="default"
+            size="sm"
+            className="w-full text-xs"
+          >
             View Details
           </Button>
         </Link>
@@ -131,7 +127,11 @@ const JobCard = ({
             disabled={loadingSavedJob}
           >
             {saved ? (
-              <Heart size={16} fill="hsl(var(--destructive))" stroke="hsl(var(--destructive))" />
+              <Heart
+                size={16}
+                fill="hsl(var(--destructive))"
+                stroke="hsl(var(--destructive))"
+              />
             ) : (
               <Heart size={16} />
             )}

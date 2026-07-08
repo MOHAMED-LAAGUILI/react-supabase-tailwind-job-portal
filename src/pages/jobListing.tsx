@@ -1,25 +1,16 @@
-import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { State } from "country-state-city";
+import { Building2, MapPin, Search, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { BarLoader } from "react-spinners";
-import useFetch from "../hooks/useFetch";
-
+import { getCompanies } from "../api/apiCompanies";
+import { getJobs } from "../api/apiJobs";
 import JobCard from "../components/job-card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
-
-import { getCompanies } from "../api/apiCompanies";
-import { getJobs } from "../api/apiJobs";
-import type { Job, Company } from "../types";
-import { Search, MapPin, Building2, X } from "lucide-react";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import useFetch from "../hooks/useFetch";
+import type { Company, Job } from "../types";
 
 const JobListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,8 +26,8 @@ const JobListing = () => {
     data: jobs,
     fn: fnJobs,
   } = useFetch<Job[]>(getJobs, {
-    location,
     company_id,
+    location,
     searchQuery,
   });
 
@@ -66,7 +57,13 @@ const JobListing = () => {
   };
 
   if (!isLoaded) {
-    return <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />;
+    return (
+      <BarLoader
+        className="mb-4"
+        width={"100%"}
+        color="#36d7b7"
+      />
+    );
   }
 
   return (
@@ -82,78 +79,112 @@ const JobListing = () => {
 
       <form
         onSubmit={handleSearch}
-        className="flex flex-wrap items-center gap-1.5 mb-6"
+        className="space-y-2 mb-6"
       >
-        <div className="relative flex-1 min-w-[160px]">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <Input
-            type="text"
-            placeholder="Search jobs by title..."
-            name="search-query"
-            defaultValue={searchQuery}
-            className="h-10 pl-9 pr-3 text-sm"
-          />
-        </div>
-
-        <div className="relative w-[130px]">
-          <MapPin size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <Select value={location} onValueChange={(value) => setLocation(value ?? "")}>
-            <SelectTrigger className="h-10 pl-9 text-sm">
-              <SelectValue placeholder="Location" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {State.getStatesOfCountry("IN").map(({ name }) => (
-                  <SelectItem key={name} value={name}>
-                    {name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="relative w-[140px]">
-          <Building2 size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <Select
-            value={company_id}
-            onValueChange={(value) => setCompany_id(value ?? "")}
-          >
-            <SelectTrigger className="h-10 pl-9 text-sm">
-              <SelectValue placeholder="Company" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {companies?.map(({ name, id }) => (
-                  <SelectItem key={name} value={String(id)}>
-                    {name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button type="submit" className="h-10 px-3 gap-1.5 text-sm shrink-0">
-          <Search size={15} />
-          Search
-        </Button>
-
-        {hasActiveFilters && (
+        <div className="flex gap-1.5">
+          <div className="relative flex-[4] min-w-0">
+            <Search
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            />
+            <Input
+              type="text"
+              placeholder="Search jobs by title..."
+              name="search-query"
+              defaultValue={searchQuery}
+              className="h-10 pl-9 pr-3 text-sm"
+            />
+          </div>
           <Button
-            variant="outline"
-            onClick={clearFilters}
-            className="h-10 px-3 gap-1.5 text-sm text-destructive border-destructive/30 hover:bg-destructive/10 shrink-0"
+            type="submit"
+            className="h-10 px-3 gap-1.5 text-sm shrink-0 flex-1"
           >
-            <X size={15} />
-            Clear
+            <Search size={15} />
+            Search
           </Button>
-        )}
+        </div>
+
+        <div className="flex gap-1.5">
+          <div className="relative flex-1 min-w-0">
+            <MapPin
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            />
+            <Select
+              value={location}
+              onValueChange={value => setLocation(value ?? "")}
+            >
+              <SelectTrigger className="h-10 pl-9 text-sm">
+                <SelectValue
+                  placeholder="Location"
+                  className="truncate"
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {State.getStatesOfCountry("MA").map(({ name }) => (
+                    <SelectItem
+                      key={name}
+                      value={name}
+                      className="truncate"
+                    >
+                      {name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="relative flex-1 min-w-0">
+            <Building2
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            />
+            <Select
+              value={company_id}
+              onValueChange={value => setCompany_id(value ?? "")}
+            >
+              <SelectTrigger className="h-10 pl-9 text-sm">
+                <SelectValue
+                  placeholder="Company"
+                  className="truncate"
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {companies?.map(({ name, id }) => (
+                    <SelectItem
+                      key={name}
+                      value={String(id)}
+                    >
+                      {name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {hasActiveFilters && (
+            <Button
+              variant="outline"
+              onClick={clearFilters}
+              className="h-10 px-3 gap-1.5 text-sm text-destructive border-destructive/30 hover:bg-destructive/10 shrink-0"
+            >
+              <X size={15} />
+              Clear
+            </Button>
+          )}
+        </div>
       </form>
 
       {loadingJobs && (
         <div className="mt-4">
-          <BarLoader width={"100%"} color="#36d7b7" />
+          <BarLoader
+            width={"100%"}
+            color="#36d7b7"
+          />
         </div>
       )}
 
@@ -161,7 +192,7 @@ const JobListing = () => {
         <>
           {jobs?.length ? (
             <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {jobs.map((job) => (
+              {jobs.map(job => (
                 <JobCard
                   key={job.id}
                   job={job}
@@ -171,11 +202,18 @@ const JobListing = () => {
             </div>
           ) : (
             <div className="mt-20 flex flex-col items-center gap-3 text-muted-foreground">
-              <Search size={40} strokeWidth={1} />
+              <Search
+                size={40}
+                strokeWidth={1}
+              />
               <p className="text-lg font-medium">No jobs found</p>
               <p className="text-sm">Try adjusting your search or filters</p>
               {hasActiveFilters && (
-                <Button variant="outline" onClick={clearFilters} className="mt-2">
+                <Button
+                  variant="outline"
+                  onClick={clearFilters}
+                  className="mt-2"
+                >
                   Clear all filters
                 </Button>
               )}

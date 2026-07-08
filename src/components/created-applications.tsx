@@ -1,12 +1,15 @@
 import { useUser } from "@clerk/clerk-react";
-import ApplicationCard from "./application-card";
+import { Send } from "lucide-react";
 import { useEffect } from "react";
+import { BarLoader } from "react-spinners";
 import { getApplications } from "../api/apiApplication";
 import useFetch from "../hooks/useFetch";
-import { BarLoader } from "react-spinners";
+import ApplicationCard from "./application-card";
 
 const CreatedApplications = () => {
   const { user } = useUser();
+
+  if (!user) return null;
 
   const {
     loading: loadingApplications,
@@ -18,25 +21,41 @@ const CreatedApplications = () => {
 
   useEffect(() => {
     fnApplications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loadingApplications) {
-    return <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />;
+    return (
+      <BarLoader
+        className="mb-4"
+        width={"100%"}
+        color="#36d7b7"
+      />
+    );
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      {applications?.map((application) => {
-        return (
-          <ApplicationCard
-            key={application.id}
-            application={application}
-            isCandidate={true}
+    <>
+      {applications?.length ? (
+        <div className="mt-6 grid md:grid-cols-2 gap-5">
+          {applications?.map(application => (
+            <ApplicationCard
+              key={application.id}
+              application={application}
+              isCandidate={true}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-20 flex flex-col items-center gap-3 text-muted-foreground">
+          <Send
+            size={40}
+            strokeWidth={1}
           />
-        );
-      })}
-    </div>
+          <p className="text-lg font-medium">No applications yet</p>
+          <p className="text-sm">Applications you submit will show up here</p>
+        </div>
+      )}
+    </>
   );
 };
 

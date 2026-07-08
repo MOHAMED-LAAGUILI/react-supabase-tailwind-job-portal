@@ -26,6 +26,7 @@
     "@efferd": "https://efferd.com/r/{name}.json",
     "@kokonutui": "https://kokonutui.com/r/{name}.json",
     "@shadcnstore": "https://shadcnstore.com/r/{name}.json",
-    "@ncdai": "https://chanhdai.com/r/{name}.json"
+    "@ncdai": "https://chanhdai.com/r/{name}.json",
+    "@supabase": "https://supabase.com/ui/r/{name}.json"
   }
 }

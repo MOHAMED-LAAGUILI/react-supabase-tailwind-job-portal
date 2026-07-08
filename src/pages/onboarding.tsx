@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 import CardFlip from "../components/kokonutui/card-flip";
 import { AnimatedContainer } from "../layout/animated-container";
@@ -18,7 +18,7 @@ const Onboarding = () => {
     await user
       .update({ unsafeMetadata: { role } })
       .then(() => navigateUser(role))
-      .catch((err) => console.error("Error updating role:", err));
+      .catch(err => console.error("Error updating role:", err));
   };
 
   useEffect(() => {
@@ -28,7 +28,13 @@ const Onboarding = () => {
   }, [user]);
 
   if (!isLoaded) {
-    return <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />;
+    return (
+      <BarLoader
+        className="mb-4"
+        width={"100%"}
+        color="#36d7b7"
+      />
+    );
   }
 
   return (
@@ -40,38 +46,26 @@ const Onboarding = () => {
         <h2 className="relative gradient-title font-extrabold text-5xl sm:text-7xl lg:text-8xl tracking-tighter mb-4">
           I am a...
         </h2>
-        <p className="relative text-muted-foreground text-sm sm:text-base">
-          Choose your role to get started
-        </p>
+        <p className="relative text-muted-foreground text-sm sm:text-base">Choose your role to get started</p>
       </div>
 
-    <section className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-8 md:flex-row">
-  <CardFlip
-    title="Candidate"
-    subtitle="Find your next opportunity"
-    description="Browse jobs, apply effortlessly, and track your applications all in one place."
-    features={[
-      "Smart job search",
-      "Quick apply",
-      "Application tracking",
-      "Saved listings",
-    ]}
-    onAction={() => handleRoleSelection("candidate")}
-  />
+      <section className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-8 md:flex-row">
+        <CardFlip
+          title="Candidate"
+          subtitle="Find your next opportunity"
+          description="Browse jobs, apply effortlessly, and track your applications all in one place."
+          features={["Smart job search", "Quick apply", "Application tracking", "Saved listings"]}
+          onAction={() => handleRoleSelection("candidate")}
+        />
 
-  <CardFlip
-    title="Recruiter"
-    subtitle="Hire the best talent"
-    description="Post jobs, review applicants, and build your dream team with powerful tools."
-    features={[
-      "Fast job posting",
-      "Applicant management",
-      "Talent discovery",
-      "Company branding",
-    ]}
-    onAction={() => handleRoleSelection("recruiter")}
-  />
-</section>
+        <CardFlip
+          title="Recruiter"
+          subtitle="Hire the best talent"
+          description="Post jobs, review applicants, and build your dream team with powerful tools."
+          features={["Fast job posting", "Applicant management", "Talent discovery", "Company branding"]}
+          onAction={() => handleRoleSelection("recruiter")}
+        />
+      </section>
     </AnimatedContainer>
   );
 };

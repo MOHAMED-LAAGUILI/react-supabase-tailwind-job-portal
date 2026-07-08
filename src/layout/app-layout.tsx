@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import Header from "./header";
 import { Footer } from "./Footer";
+import Header from "./header";
 
 const AppLayout = () => {
   return (
@@ -10,7 +10,7 @@ const AppLayout = () => {
       <main className="min-h-screen mx-auto max-w-7xl px-4">
         <Outlet />
       </main>
-     <Footer/>
+      <Footer />
     </div>
   );
 };

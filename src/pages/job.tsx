@@ -1,22 +1,14 @@
-import { useEffect } from "react";
-import { BarLoader } from "react-spinners";
-import MDEditor from "@uiw/react-md-editor";
-import { useParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { Briefcase, DoorClosed, DoorOpen, MapPinIcon } from "lucide-react";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
-import { ApplyJobDrawer } from "../components/apply-job";
-import ApplicationCard from "../components/application-card";
-
-import useFetch from "../hooks/useFetch";
+import MDEditor from "@uiw/react-md-editor";
+import { Briefcase, Building2, DoorClosed, DoorOpen, MapPinIcon } from "lucide-react";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { BarLoader } from "react-spinners";
 import { getSingleJob, updateHiringStatus } from "../api/apiJobs";
+import ApplicationCard from "../components/application-card";
+import { ApplyJobDrawer } from "../components/apply-job";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import useFetch from "../hooks/useFetch";
 import type { Job } from "../types";
 
 const JobPage = () => {
@@ -35,12 +27,9 @@ const JobPage = () => {
     if (isLoaded) fnJob();
   }, [isLoaded]);
 
-  const { loading: loadingHiringStatus, fn: fnHiringStatus } = useFetch(
-    updateHiringStatus,
-    {
-      job_id: id,
-    }
-  );
+  const { loading: loadingHiringStatus, fn: fnHiringStatus } = useFetch(updateHiringStatus, {
+    job_id: id,
+  });
 
   const handleStatusChange = (value: string) => {
     const isOpen = value === "open";
@@ -48,84 +37,139 @@ const JobPage = () => {
   };
 
   if (!isLoaded || loadingJob) {
-    return <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />;
+    return (
+      <BarLoader
+        className="mb-4"
+        width={"100%"}
+        color="#36d7b7"
+      />
+    );
   }
 
+  const isRecruiter = job?.recruiter_id === user?.id;
+  const hasApplied = job?.applications?.find(ap => ap.candidate_id === user?.id);
+
   return (
-    <div className="flex flex-col gap-8 mt-5">
-      <div className="flex flex-col-reverse gap-6 md:flex-row justify-between items-center">
-        <h1 className="gradient-title font-extrabold pb-3 text-4xl sm:text-6xl">
-          {job?.title}
-        </h1>
-        <img src={job?.company?.logo_url} className="h-12" alt={job?.title} />
+    <div className="py-6 space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="h-14 w-14 rounded-lg border bg-card flex items-center justify-center overflow-hidden shrink-0">
+            {job?.company?.logo_url ? (
+              <img
+                src={job.company.logo_url}
+                alt=""
+                className="h-10 w-10 object-cover"
+              />
+            ) : (
+              <Building2
+                size={20}
+                className="text-muted-foreground"
+              />
+            )}
+          </div>
+          <div>
+            <h1 className="gradient-title font-extrabold text-3xl sm:text-5xl leading-tight">{job?.title}</h1>
+            <p className="text-muted-foreground text-sm mt-1">{job?.company?.name}</p>
+          </div>
+        </div>
       </div>
 
-      <div className="flex justify-between ">
-        <div className="flex gap-2">
-          <MapPinIcon /> {job?.location}
+      {/* Metadata */}
+      <div className="flex flex-wrap gap-3">
+        <div className="flex items-center gap-1.5 text-sm bg-muted rounded-full px-3 py-1.5">
+          <MapPinIcon
+            size={14}
+            className="text-muted-foreground"
+          />
+          {job?.location}
         </div>
-        <div className="flex gap-2">
-          <Briefcase /> {job?.applications?.length} Applicants
+        <div className="flex items-center gap-1.5 text-sm bg-muted rounded-full px-3 py-1.5">
+          <Briefcase
+            size={14}
+            className="text-muted-foreground"
+          />
+          {job?.applications?.length ?? 0} Applicant{(job?.applications?.length ?? 0) !== 1 ? "s" : ""}
         </div>
-        <div className="flex gap-2">
-          {job?.isOpen ? (
-            <>
-              <DoorOpen /> Open
-            </>
-          ) : (
-            <>
-              <DoorClosed /> Closed
-            </>
+        <div
+          className={`flex items-center gap-1.5 text-sm rounded-full px-3 py-1.5 ${
+            job?.isOpen
+              ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
+              : "bg-destructive/10 text-destructive"
+          }`}
+        >
+          {job?.isOpen ? <DoorOpen size={14} /> : <DoorClosed size={14} />}
+          {job?.isOpen ? "Open" : "Closed"}
+        </div>
+      </div>
+
+      {/* Hiring Status (recruiter only) */}
+      {isRecruiter && (
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium">Hiring Status:</span>
+          <Select
+            onValueChange={handleStatusChange}
+            defaultValue={job?.isOpen ? "open" : "closed"}
+          >
+            <SelectTrigger className="w-36 h-9 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="open">Open</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+          {loadingHiringStatus && (
+            <BarLoader
+              width={"100%"}
+              color="#36d7b7"
+            />
           )}
         </div>
-      </div>
-
-      {job?.recruiter_id === user?.id && (
-        <Select onValueChange={handleStatusChange}>
-          <SelectTrigger
-            className={`w-full ${job?.isOpen ? "bg-green-950" : "bg-red-950"}`}
-          >
-            <SelectValue
-              placeholder={
-                "Hiring Status " + (job?.isOpen ? "( Open )" : "( Closed )")
-              }
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="open">Open</SelectItem>
-            <SelectItem value="closed">Closed</SelectItem>
-          </SelectContent>
-        </Select>
       )}
 
-      <h2 className="text-2xl sm:text-3xl font-bold">About the job</h2>
-      <p className="sm:text-lg">{job?.description}</p>
+      {/* About the job */}
+      <section>
+        <h2 className="text-xl sm:text-2xl font-bold mb-3">About the job</h2>
+        <p className="text-muted-foreground sm:text-base leading-relaxed">{job?.description}</p>
+      </section>
 
-      <h2 className="text-2xl sm:text-3xl font-bold">
-        What we are looking for
-      </h2>
-      <MDEditor.Markdown
-        source={job?.requirements}
-        className="bg-transparent sm:text-lg"
-      />
-      {job?.recruiter_id !== user?.id && (
-        <ApplyJobDrawer
-          job={job}
-          user={user}
-          fetchJob={fnJob}
-          applied={job?.applications?.find((ap) => ap.candidate_id === user?.id)}
-        />
-      )}
-      {loadingHiringStatus && <BarLoader width={"100%"} color="#36d7b7" />}
-      {job?.applications?.length > 0 && job?.recruiter_id === user?.id && (
-        <div className="flex flex-col gap-2">
-          <h2 className="font-bold mb-4 text-xl ml-1">Applications</h2>
-          {job?.applications.map((application) => {
-            return (
-              <ApplicationCard key={application.id} application={application} />
-            );
-          })}
+      {/* Requirements */}
+      <section>
+        <h2 className="text-xl sm:text-2xl font-bold mb-3">What we are looking for</h2>
+        <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground">
+          <MDEditor.Markdown
+            source={job?.requirements}
+            className="bg-transparent"
+          />
         </div>
+      </section>
+
+      {/* Apply or Applied button */}
+      {!isRecruiter && (
+        <div className="flex justify-center sm:justify-start">
+          <ApplyJobDrawer
+            job={job}
+            user={user}
+            fetchJob={fnJob}
+            applied={hasApplied}
+          />
+        </div>
+      )}
+
+      {/* Applications (recruiter only) */}
+      {isRecruiter && job?.applications && job.applications.length > 0 && (
+        <section>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Applications ({job.applications.length})</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {job.applications.map(application => (
+              <ApplicationCard
+                key={application.id}
+                application={application}
+              />
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );

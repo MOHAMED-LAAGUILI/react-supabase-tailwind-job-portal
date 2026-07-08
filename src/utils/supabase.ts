@@ -1,15 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 
-export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+export const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
 
-const supabaseClient = async (supabaseAccessToken: string) => {
-  const supabase = createClient(supabaseUrl, supabaseKey, {
-    global: { headers: { Authorization: `Bearer ${supabaseAccessToken}` } },
+export function supabaseClient(accessToken?: string) {
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: accessToken
+        ? {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        : {},
+    },
   });
-  // set Supabase JWT on the client object,
-  // so it is sent up with all Supabase requests
-  return supabase;
-};
-
-export default supabaseClient;
+}

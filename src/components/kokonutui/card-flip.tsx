@@ -42,9 +42,7 @@ export default function CardFlip({
           "relative h-full w-full",
           "[transform-style:preserve-3d]",
           "transition-all duration-700",
-          isFlipped
-            ? "[transform:rotateY(180deg)]"
-            : "[transform:rotateY(0deg)]"
+          isFlipped ? "[transform:rotateY(180deg)]" : "[transform:rotateY(0deg)]"
         )}
       >
         <div
@@ -107,22 +105,22 @@ export default function CardFlip({
         </div>
 
         {/* Back of card */}
-          <div
-            onClick={onAction}
-            className={cn(
-              "absolute inset-0 h-full w-full",
-              "[backface-visibility:hidden] [transform:rotateY(180deg)]",
-              "rounded-2xl p-6",
-              "bg-gradient-to-b from-zinc-100 to-white dark:from-zinc-900 dark:to-black",
-              "border border-zinc-200 dark:border-zinc-800",
-              "shadow-xs dark:shadow-lg",
-              "flex flex-col",
-              "transition-all duration-700",
-              "group-hover:shadow-lg dark:group-hover:shadow-xl",
-              isFlipped ? "opacity-100" : "opacity-0",
-              "cursor-pointer"
-            )}
-          >
+        <div
+          onClick={onAction}
+          className={cn(
+            "absolute inset-0 h-full w-full",
+            "[backface-visibility:hidden] [transform:rotateY(180deg)]",
+            "rounded-2xl p-6",
+            "bg-gradient-to-b from-zinc-100 to-white dark:from-zinc-900 dark:to-black",
+            "border border-zinc-200 dark:border-zinc-800",
+            "shadow-xs dark:shadow-lg",
+            "flex flex-col",
+            "transition-all duration-700",
+            "group-hover:shadow-lg dark:group-hover:shadow-xl",
+            isFlipped ? "opacity-100" : "opacity-0",
+            "cursor-pointer"
+          )}
+        >
           <div className="flex-1 space-y-6">
             <div className="space-y-2">
               <h3 className="font-semibold text-lg text-zinc-900 leading-snug tracking-tight transition-all duration-500 ease-out-expo group-hover:translate-y-[-2px] dark:text-white">
@@ -139,10 +137,8 @@ export default function CardFlip({
                   className="flex items-center gap-2 text-sm text-zinc-700 transition-all duration-500 dark:text-zinc-300"
                   key={feature}
                   style={{
-                    transform: isFlipped
-                      ? "translateX(0)"
-                      : "translateX(-10px)",
                     opacity: isFlipped ? 1 : 0,
+                    transform: isFlipped ? "translateX(0)" : "translateX(-10px)",
                     transitionDelay: `${index * 100 + 200}ms`,
                   }}
                 >

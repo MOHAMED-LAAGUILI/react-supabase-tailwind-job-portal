@@ -1,38 +1,28 @@
-export const companies = [
+export const logos = [
   {
-    "name": "amazon",
-    "path": "/companies/amazon.svg",
-    "id": 1
-  },
-  {
+    "id": 2,
     "name": "atlassian",
     "path": "/companies/atlassian.svg",
-    "id": 2
   },
   {
+    "id": 3,
     "name": "google",
     "path": "/companies/google.webp",
-    "id": 3
   },
 
   {
+    "id": 5,
     "name": "meta",
     "path": "/companies/meta.svg",
-    "id": 5
   },
   {
+    "id": 6,
     "name": "microsoft",
     "path": "/companies/microsoft.webp",
-    "id": 6
   },
   {
+    "id": 7,
     "name": "netflix",
     "path": "/companies/netflix.png",
-    "id": 7
   },
-  {
-    "name": "uber",
-    "path": "/companies/uber.svg",
-    "id": 8
-  }
-]
+];
