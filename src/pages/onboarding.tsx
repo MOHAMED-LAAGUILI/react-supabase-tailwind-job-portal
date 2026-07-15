@@ -1,12 +1,14 @@
-import { useUser } from "@clerk/clerk-react";
+import { useSession, useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 import CardFlip from "../components/kokonutui/card-flip";
 import { AnimatedContainer } from "../layout/animated-container";
+import { supabaseClient } from "../utils/supabase";
 
 const Onboarding = () => {
   const { user, isLoaded } = useUser();
+  const { session } = useSession();
   const navigate = useNavigate();
 
   const navigateUser = (currRole: string) => {
@@ -15,10 +17,17 @@ const Onboarding = () => {
 
   const handleRoleSelection = async (role: string) => {
     if (!user) return;
-    await user
-      .update({ unsafeMetadata: { role } })
-      .then(() => navigateUser(role))
-      .catch(err => console.error("Error updating role:", err));
+    try {
+      await user.update({ unsafeMetadata: { role } });
+      const supabaseAccessToken = await session?.getToken({ template: "supabase" });
+      if (supabaseAccessToken) {
+        const supabase = supabaseClient(supabaseAccessToken);
+        await supabase.from("profiles").insert({ id: user.id, role });
+      }
+      navigateUser(role);
+    } catch (err) {
+      console.error("Error during onboarding:", err);
+    }
   };
 
   useEffect(() => {

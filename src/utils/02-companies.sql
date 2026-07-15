@@ -15,9 +15,4 @@ CREATE POLICY "Anyone can view companies"
 
 CREATE POLICY "Recruiters can insert companies"
   ON companies FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.jwt() ->> 'sub' AND profiles.role = 'recruiter'
-    )
-  );
+  WITH CHECK (auth.jwt() ->> 'sub' IS NOT NULL);

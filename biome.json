@@ -1,6 +1,5 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-
   "assist": {
     "actions": {
       "source": {
@@ -9,14 +8,16 @@
       }
     },
     "enabled": true,
-    "includes": ["src/**/*.{ts,tsx,js,jsx}"]
+    "includes": [
+      "src/**/*.{ts,tsx,js,jsx}"
+    ]
   },
-
   "files": {
     "ignoreUnknown": true,
-    "includes": ["src/**/*.{ts,tsx,js,jsx}"]
+    "includes": [
+      "src/**/*.{ts,tsx,js,jsx}"
+    ]
   },
-
   "formatter": {
     "attributePosition": "multiline",
     "enabled": true,
@@ -27,7 +28,6 @@
     "lineWidth": 120,
     "useEditorconfig": false
   },
-
   "javascript": {
     "formatter": {
       "arrowParentheses": "asNeeded",
@@ -45,16 +45,14 @@
       "enabled": false
     }
   },
-
   "json": {
     "formatter": {
       "enabled": true,
       "indentWidth": 2
     }
   },
-
   "linter": {
-    "enabled": false,
+    "enabled": true,
     "rules": {
       "preset": "recommended"
     }
@@ -63,5 +61,9 @@
     "clientKind": "git",
     "enabled": true,
     "useIgnoreFile": true
-  }
+  },
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/react"
+  ]
 }

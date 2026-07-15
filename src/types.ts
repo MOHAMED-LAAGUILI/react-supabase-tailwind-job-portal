@@ -29,7 +29,7 @@ export interface SavedJob {
 export interface Application {
   id: number;
   job_id: number;
-  candidate_id: string;
+  user_id: string;
   status: string;
   created_at: string;
 }

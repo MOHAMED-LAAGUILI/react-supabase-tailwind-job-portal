@@ -1,16 +1,4 @@
 {
-  "name": "react-supabase-tailwind-job-portal",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-     "format": "bunx --bun @biomejs/biome format --write",
-    "check": "bunx --bun @biomejs/biome check --write",
-    "biome": "bun run check && bun run format",
-    "preview": "vite preview"
-  },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@clerk/clerk-react": "^5.61.8",
@@ -45,6 +33,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
+    "@biomejs/biome": "2.5.3",
     "@rolldown/plugin-babel": "^0.2.3",
     "@types/babel__core": "^7.20.5",
     "@types/node": "^24.13.2",
@@ -53,6 +42,21 @@
     "@vitejs/plugin-react": "^6.0.3",
     "babel-plugin-react-compiler": "^1.0.0",
     "typescript": "~6.0.2",
+    "ultracite": "7.9.4",
     "vite": "^8.1.1"
-  }
+  },
+  "name": "react-supabase-tailwind-job-portal",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "format": "bunx --bun @biomejs/biome format --write",
+    "check": "ultracite check",
+    "biome": "bun run check && bun run format",
+    "preview": "vite preview",
+    "doctor": "npx react-doctor@latest",
+    "fix": "ultracite fix"
+  },
+  "type": "module",
+  "version": "1.0.0",
+  "private": true
 }

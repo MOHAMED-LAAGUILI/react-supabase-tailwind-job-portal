@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 import { getSingleJob, updateHiringStatus } from "../api/apiJobs";
 import ApplicationCard from "../components/application-card";
-import { ApplyJobDrawer } from "../components/apply-job";
+import { ApplyJobDialog } from "../components/apply-job";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import useFetch from "../hooks/useFetch";
 import type { Job } from "../types";
@@ -47,7 +47,7 @@ const JobPage = () => {
   }
 
   const isRecruiter = job?.recruiter_id === user?.id;
-  const hasApplied = job?.applications?.find(ap => ap.candidate_id === user?.id);
+  const hasApplied = job?.applications?.find(ap => ap.user_id === user?.id);
 
   return (
     <div className="py-6 space-y-8">
@@ -137,18 +137,18 @@ const JobPage = () => {
       {/* Requirements */}
       <section>
         <h2 className="text-xl sm:text-2xl font-bold mb-3">What we are looking for</h2>
-        <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground">
-          <MDEditor.Markdown
-            source={job?.requirements}
-            className="bg-transparent"
-          />
+        <div
+          className="text-muted-foreground"
+        
+        >
+         {job?.requirements}
         </div>
       </section>
 
       {/* Apply or Applied button */}
       {!isRecruiter && (
         <div className="flex justify-center sm:justify-start">
-          <ApplyJobDrawer
+          <ApplyJobDialog
             job={job as any}
             user={user as any}
             fetchJob={fnJob}

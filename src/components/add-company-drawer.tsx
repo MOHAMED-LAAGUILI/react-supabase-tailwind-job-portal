@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, Upload, X } from "lucide-react";
+import { Plus, Upload, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BarLoader } from "react-spinners";
@@ -62,8 +62,8 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
       open={open}
       onOpenChange={setOpen}
     >
-      <DialogTrigger className="inline-flex items-center justify-center shrink-0 h-10 w-10 rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer">
-        <Building2 size={16} />
+      <DialogTrigger className="inline-flex items-center justify-center shrink-0 h-8 w-8 rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer">
+        <Plus size={16} />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

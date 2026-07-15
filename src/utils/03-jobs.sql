@@ -8,7 +8,7 @@ CREATE TABLE jobs (
   requirements TEXT,
   company_id BIGINT REFERENCES companies(id) ON DELETE CASCADE,
   recruiter_id TEXT NOT NULL,
-  is_open BOOLEAN DEFAULT TRUE,
+  "isOpen" BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -16,7 +16,7 @@ ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Anyone can view open jobs"
   ON jobs FOR SELECT
-  USING (is_open = TRUE OR auth.jwt() ->> 'sub' = recruiter_id);
+  USING ("isOpen" = TRUE OR auth.jwt() ->> 'sub' = recruiter_id);
 
 CREATE POLICY "Recruiters can insert jobs"
   ON jobs FOR INSERT
