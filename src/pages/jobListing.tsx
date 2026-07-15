@@ -123,17 +123,14 @@ const JobListing = () => {
             />
           </div>
 
-          <div className="flex-1 relative">
-            <MapPin
-              size={15}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none z-10"
-            />
+          <div className="flex-1">
             <Select
               value={location}
               onValueChange={value => setLocation(value ?? "")}
               disabled={!selectedCountry}
             >
               <SelectTrigger className="h-10 pl-9 text-sm">
+                <MapPin size={15} className="text-muted-foreground shrink-0" />
                 <SelectValue
                   placeholder={selectedCountry ? "Region" : "Country first"}
                   className="truncate"
@@ -142,11 +139,7 @@ const JobListing = () => {
               <SelectContent>
                 <SelectGroup>
                   {regions.map(({ isoCode, name }) => (
-                    <SelectItem
-                      key={isoCode}
-                      value={name}
-                      className="truncate"
-                    >
+                    <SelectItem key={isoCode} value={name} className="truncate">
                       {name}
                     </SelectItem>
                   ))}
@@ -155,30 +148,20 @@ const JobListing = () => {
             </Select>
           </div>
 
-          <div className="flex-[1.5] relative">
-            <Building2
-              size={15}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none z-10"
-            />
+          <div className="flex-1">
             <Select
               value={company_id}
               onValueChange={value => setCompany_id(value ?? "")}
             >
               <SelectTrigger className="h-10 pl-9 text-sm">
-                <SelectValue
-                  placeholder="Company"
-                  className="truncate"
-                />
+                <Building2 size={15} className="text-muted-foreground shrink-0" />
+                <SelectValue placeholder="Company" className="truncate" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   {companies?.map(({ name, id }) => (
-                    <SelectItem
-                      key={id}
-                      value={String(id)}
-                      className="truncate"
-                    >
-                      {name}
+                    <SelectItem key={id} value={String(id)} className="truncate">
+                      {id} - {name}
                     </SelectItem>
                   ))}
                 </SelectGroup>
