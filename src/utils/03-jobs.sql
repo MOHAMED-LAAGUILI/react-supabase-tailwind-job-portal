@@ -5,6 +5,7 @@ CREATE TABLE jobs (
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   location TEXT NOT NULL,
+  country_code TEXT,
   requirements TEXT,
   company_id BIGINT REFERENCES companies(id) ON DELETE CASCADE,
   recruiter_id TEXT NOT NULL,

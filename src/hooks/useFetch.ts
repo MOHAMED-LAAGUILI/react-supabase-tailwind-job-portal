@@ -22,8 +22,10 @@ const useFetch = <T, O = Record<string, unknown>>(
       const response = await cb(supabaseAccessToken!, options, ...args);
       setData(response ?? undefined);
       setError(null);
+      return response;
     } catch (err) {
       setError(err);
+      return null;
     } finally {
       setLoading(false);
     }

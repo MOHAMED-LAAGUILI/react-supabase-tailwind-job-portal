@@ -82,6 +82,13 @@ const JobPage = () => {
             size={14}
             className="text-muted-foreground"
           />
+          {job?.country_code && (
+            <img
+              src={`https://flagcdn.com/w20/${job.country_code.toLowerCase()}.png`}
+              alt=""
+              className="h-3.5 w-5 object-cover rounded-sm"
+            />
+          )}
           {job?.location}
         </div>
         <div className="flex items-center gap-1.5 text-sm bg-muted rounded-full px-3 py-1.5">

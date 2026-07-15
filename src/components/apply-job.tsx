@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PenBox, Send, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { File, PenBox, Send, X } from "lucide-react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { BarLoader } from "react-spinners";
 import * as z from "zod";
@@ -11,12 +11,13 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../components/ui/dialog";
+import { useSupabaseUpload } from "../hooks/use-supabase-upload";
 import useFetch from "../hooks/useFetch";
+import { Dropzone, DropzoneEmptyState, formatBytes } from "./dropzone";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
@@ -43,8 +44,12 @@ interface ApplyJobDialogProps {
 
 export function ApplyJobDialog({ user, job, fetchJob, applied = false }: ApplyJobDialogProps) {
   const [open, setOpen] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
+
+  const upload = useSupabaseUpload({
+    allowedMimeTypes: ["application/pdf", "application/msword"],
+    bucketName: "resumes",
+    maxFiles: 1,
+  });
 
   const {
     register,
@@ -65,30 +70,21 @@ export function ApplyJobDialog({ user, job, fetchJob, applied = false }: ApplyJo
       : (errorApply as { message?: string })?.message || "An error occurred"
     : null;
 
-  const onSubmit = (data: Record<string, unknown>) => {
-    const file = fileRef.current?.files?.[0];
-    if (!file) {
-      setFileError("Resume is required");
-      return;
-    }
-    const validTypes = ["application/pdf", "application/msword"];
-    if (!validTypes.includes(file.type)) {
-      setFileError("Only PDF or Word documents are allowed");
-      return;
-    }
-    setFileError(null);
-    fnApply({
+  const onSubmit = async (data: Record<string, unknown>) => {
+    if (upload.files.length === 0) return;
+    const result = await fnApply({
       ...data,
       user_id: user?.id,
       job_id: job.id,
       name: user?.fullName,
-      resume: file,
+      resume: upload.files[0],
       status: "applied",
-    }).then(() => {
-      fetchJob();
-      reset();
-      setOpen(false);
     });
+    if (!result) return;
+    fetchJob();
+    reset();
+    upload.setFiles([]);
+    setOpen(false);
   };
 
   return (
@@ -101,6 +97,9 @@ export function ApplyJobDialog({ user, job, fetchJob, applied = false }: ApplyJo
         {job?.isOpen ? (applied ? "Applied" : "Apply Now") : "Hiring Closed"}
       </DialogTrigger>
       <DialogContent>
+        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+          <X size={16} />
+        </DialogClose>
         <DialogHeader>
           <DialogTitle>Apply for {job?.title}</DialogTitle>
           <DialogDescription>{job?.company?.name}</DialogDescription>
@@ -162,13 +161,31 @@ export function ApplyJobDialog({ user, job, fetchJob, applied = false }: ApplyJo
           />
           {errors.education && <p className="text-xs text-destructive">{errors.education.message as string}</p>}
 
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".pdf,.doc,.docx"
-            className="flex h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30"
-          />
-          {fileError && <p className="text-xs text-destructive">{fileError}</p>}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Resume</label>
+            <Dropzone
+              className="w-full"
+              {...upload}
+            >
+              <DropzoneEmptyState />
+              {upload.files.length > 0 && (
+                <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border bg-muted/30 px-3 py-2">
+                  <div className="flex items-center gap-2 truncate">
+                    <File size={16} className="shrink-0 text-muted-foreground" />
+                    <span className="text-sm truncate">{upload.files[0].name}</span>
+                    <span className="text-xs text-muted-foreground shrink-0">{formatBytes(upload.files[0].size, 1)}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => upload.setFiles([])}
+                    className="shrink-0 text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+            </Dropzone>
+          </div>
 
           {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}
 
@@ -178,19 +195,12 @@ export function ApplyJobDialog({ user, job, fetchJob, applied = false }: ApplyJo
             type="submit"
             size="lg"
             className="gap-2"
-            disabled={loadingApply === true}
+            disabled={loadingApply === true || upload.files.length === 0}
           >
             <Send size={16} />
             Submit Application
           </Button>
         </form>
-
-        <DialogFooter>
-          <DialogClose className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg border border-input bg-background text-sm font-medium hover:bg-accent transition-colors cursor-pointer">
-            <X size={15} />
-            Cancel
-          </DialogClose>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

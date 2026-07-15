@@ -54,6 +54,7 @@ const PostJob = () => {
     fnCreateJob({
       ...data,
       company_id: Number(data.company_id),
+      country_code: selectedCountry || null,
       isOpen: true,
       recruiter_id: user.id,
     });

@@ -56,6 +56,8 @@ const JobListing = () => {
     if (query) setSearchQuery(String(query));
   };
 
+  const selectedCompany = companies?.find(co => String(co.id) === company_id);
+
   const hasActiveFilters = searchQuery || location || company_id || selectedCountry;
 
   const clearFilters = () => {
@@ -91,7 +93,7 @@ const JobListing = () => {
         className="space-y-2 mb-6"
       >
         <div className="flex gap-1.5">
-          <div className="relative flex-[4] min-w-0">
+          <div className="relative flex-4 min-w-0">
             <Search
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
@@ -113,73 +115,73 @@ const JobListing = () => {
           </Button>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
-          <div className="flex-1">
-            <CountryCombobox
-              countries={countries}
-              selectedCountry={selectedCountry}
-              onSelect={setSelectedCountry}
-              hideLabel
-            />
-          </div>
+       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto] gap-3">
+  <CountryCombobox
+    countries={countries}
+    selectedCountry={selectedCountry}
+    onSelect={setSelectedCountry}
+    hideLabel
+  />
 
-          <div className="flex-1">
-            <Select
-              value={location}
-              onValueChange={value => setLocation(value ?? "")}
-              disabled={!selectedCountry}
-            >
-              <SelectTrigger className="h-10 pl-9 text-sm">
-                <MapPin size={15} className="text-muted-foreground shrink-0" />
-                <SelectValue
-                  placeholder={selectedCountry ? "Region" : "Country first"}
-                  className="truncate"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {regions.map(({ isoCode, name }) => (
-                    <SelectItem key={isoCode} value={name} className="truncate">
-                      {name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+  <Select
+    value={location}
+    onValueChange={value => setLocation(value ?? "")}
+    disabled={!selectedCountry}
+  >
+    <SelectTrigger className="data-[size=default]:h-10 h-10 w-full">
+      <MapPin className="size-4 text-muted-foreground" />
+      <SelectValue
+        placeholder={selectedCountry ? "Region" : "Country first"}
+      />
+    </SelectTrigger>
 
-          <div className="flex-1">
-            <Select
-              value={company_id}
-              onValueChange={value => setCompany_id(value ?? "")}
-            >
-              <SelectTrigger className="h-10 pl-9 text-sm">
-                <Building2 size={15} className="text-muted-foreground shrink-0" />
-                <SelectValue placeholder="Company" className="truncate" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {companies?.map(({ name, id }) => (
-                    <SelectItem key={id} value={String(id)} className="truncate">
-                      {id} - {name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+    <SelectContent>
+      <SelectGroup>
+        {regions.map(({ isoCode, name }) => (
+          <SelectItem key={isoCode} value={name}>
+            {name}
+          </SelectItem>
+        ))}
+      </SelectGroup>
+    </SelectContent>
+  </Select>
 
-          {hasActiveFilters && (
-            <Button
-              variant="outline"
-              onClick={clearFilters}
-              className="h-10 px-3 gap-1.5 text-sm text-destructive border-destructive/30 hover:bg-destructive/10 shrink-0"
-            >
-              <X size={15} />
-              Clear
-            </Button>
-          )}
-        </div>
+  <Select
+    value={company_id}
+    onValueChange={value => setCompany_id(value ?? "")}
+  >
+    <SelectTrigger className="data-[size=default]:h-10 h-10 w-full">
+                          <Building2
+                            size={15}
+                            className="text-muted-foreground shrink-0"
+                          />
+                          <span className="flex-1 text-left truncate">
+                            {selectedCompany ? `${selectedCompany.id} - ${selectedCompany.name}` : <span className="text-muted-foreground">Select company</span>}
+                          </span>
+                        </SelectTrigger>
+                        
+    <SelectContent>
+      <SelectGroup>
+        {companies?.map(({ id, name }) => (
+          <SelectItem key={id} value={String(id)}>
+            {id} - {name}
+          </SelectItem>
+        ))}
+      </SelectGroup>
+    </SelectContent>
+  </Select>
+
+  {hasActiveFilters && (
+    <Button
+      variant="outline"
+      onClick={clearFilters}
+      className="h-10 w-full sm:w-auto whitespace-nowrap"
+    >
+      <X className="size-4" />
+      Clear
+    </Button>
+  )}
+</div>
       </form>
 
       {loadingJobs && (

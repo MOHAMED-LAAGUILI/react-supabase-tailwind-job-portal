@@ -9,6 +9,7 @@ export interface Job {
   title: string;
   description: string;
   location: string;
+  country_code?: string;
   company_id: number;
   requirements: string;
   isOpen: boolean;
