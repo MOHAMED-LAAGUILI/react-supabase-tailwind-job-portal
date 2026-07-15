@@ -40,8 +40,8 @@ const Onboarding = () => {
     return (
       <BarLoader
         className="mb-4"
-        width={"100%"}
         color="#36d7b7"
+        width={"100%"}
       />
     );
   }
@@ -60,19 +60,19 @@ const Onboarding = () => {
 
       <section className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-8 md:flex-row">
         <CardFlip
-          title="Candidate"
-          subtitle="Find your next opportunity"
           description="Browse jobs, apply effortlessly, and track your applications all in one place."
           features={["Smart job search", "Quick apply", "Application tracking", "Saved listings"]}
           onAction={() => handleRoleSelection("candidate")}
+          subtitle="Find your next opportunity"
+          title="Candidate"
         />
 
         <CardFlip
-          title="Recruiter"
-          subtitle="Hire the best talent"
           description="Post jobs, review applicants, and build your dream team with powerful tools."
           features={["Fast job posting", "Applicant management", "Talent discovery", "Company branding"]}
           onAction={() => handleRoleSelection("recruiter")}
+          subtitle="Hire the best talent"
+          title="Recruiter"
         />
       </section>
     </AnimatedContainer>

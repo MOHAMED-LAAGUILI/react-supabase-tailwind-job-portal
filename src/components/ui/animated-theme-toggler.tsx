@@ -8,16 +8,16 @@ export type TransitionVariant = "circle" | "square" | "triangle" | "diamond" | "
 
 interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<"button"> {
   duration?: number;
-  variant?: TransitionVariant;
   /** When true, the transition expands from the viewport center instead of the button center. */
   fromCenter?: boolean;
+  /** Called on toggle. Pair with `theme` for controlled usage. */
+  onThemeChange?: (theme: "light" | "dark") => void;
   /**
    * Controlled theme value. When provided, the parent owns persistence
    * (e.g. `next-themes`) and this component will not write to localStorage.
    */
   theme?: "light" | "dark";
-  /** Called on toggle. Pair with `theme` for controlled usage. */
-  onThemeChange?: (theme: "light" | "dark") => void;
+  variant?: TransitionVariant;
 }
 
 function polygonCollapsed(cx: number, cy: number, vertexCount: number): string {
@@ -228,10 +228,10 @@ export const AnimatedThemeToggler = ({
 
   return (
     <button
-      type="button"
-      ref={buttonRef}
-      onClick={toggleTheme}
       className={cn(className)}
+      onClick={toggleTheme}
+      ref={buttonRef}
+      type="button"
       {...props}
     >
       {isDark ? <Sun /> : <Moon />}

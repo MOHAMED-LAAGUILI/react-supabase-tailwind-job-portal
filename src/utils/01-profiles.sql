@@ -1,3 +1,11 @@
+-- ==========================================================
+-- PROFILES TABLE
+-- Stores user roles (candidate / recruiter).
+-- Each user gets one row, created during onboarding.
+-- Clerk user ID is the primary key.
+-- RLS: users can only read/update their own row.
+-- ==========================================================
+
 DROP TABLE IF EXISTS profiles CASCADE;
 
 CREATE TABLE profiles (

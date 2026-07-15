@@ -1,3 +1,10 @@
+-- ==========================================================
+-- SAVED JOBS TABLE
+-- Lets candidates bookmark jobs for later.
+-- Enforces unique (user_id, job_id) to prevent duplicates.
+-- RLS: users manage their own saved list.
+-- ==========================================================
+
 DROP TABLE IF EXISTS saved_jobs CASCADE;
 
 CREATE TABLE saved_jobs (

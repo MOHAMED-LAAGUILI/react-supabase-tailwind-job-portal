@@ -1,18 +1,14 @@
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
-import babel from '@rolldown/plugin-babel'
-import path from 'path'
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import babel from "@rolldown/plugin-babel";
+import path from "path";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    babel({ presets: [reactCompilerPreset()] })
-  ],
+  plugins: [react(), tailwindcss(), babel({ presets: [reactCompilerPreset()] })],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
-    }
-  }
-})
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
+});

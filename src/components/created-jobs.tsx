@@ -27,8 +27,8 @@ const CreatedJobs = () => {
     return (
       <BarLoader
         className="mt-4"
-        width={"100%"}
         color="#36d7b7"
+        width={"100%"}
       />
     );
   }
@@ -39,10 +39,10 @@ const CreatedJobs = () => {
         <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {createdJobs.map(job => (
             <JobCard
-              key={job.id}
-              job={job}
-              onJobAction={fnCreatedJobs}
               isMyJob
+              job={job}
+              key={job.id}
+              onJobAction={fnCreatedJobs}
             />
           ))}
         </div>

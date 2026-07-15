@@ -27,8 +27,8 @@ const CreatedApplications = () => {
     return (
       <BarLoader
         className="mb-4"
-        width={"100%"}
         color="#36d7b7"
+        width={"100%"}
       />
     );
   }
@@ -39,9 +39,9 @@ const CreatedApplications = () => {
         <div className="mt-6 grid md:grid-cols-2 gap-5">
           {applications?.map(application => (
             <ApplicationCard
-              key={application.id}
               application={application}
               isCandidate={true}
+              key={application.id}
             />
           ))}
         </div>

@@ -15,11 +15,11 @@ import { useState } from "react";
 import { cn } from "../../lib/utils";
 
 export interface CardFlipProps {
-  title?: string;
-  subtitle?: string;
   description?: string;
   features?: string[];
   onAction?: () => void;
+  subtitle?: string;
+  title?: string;
 }
 
 export default function CardFlip({
@@ -106,7 +106,6 @@ export default function CardFlip({
 
         {/* Back of card */}
         <div
-          onClick={onAction}
           className={cn(
             "absolute inset-0 h-full w-full",
             "[backface-visibility:hidden] [transform:rotateY(180deg)]",
@@ -120,6 +119,7 @@ export default function CardFlip({
             isFlipped ? "opacity-100" : "opacity-0",
             "cursor-pointer"
           )}
+          onClick={onAction}
         >
           <div className="flex-1 space-y-6">
             <div className="space-y-2">
@@ -151,7 +151,6 @@ export default function CardFlip({
 
           <div className="mt-6 border-zinc-200 border-t pt-6 dark:border-zinc-800">
             <div
-              onClick={onAction}
               className={cn(
                 "group/start relative",
                 "flex items-center justify-between",
@@ -163,6 +162,7 @@ export default function CardFlip({
                 "dark:hover:from-0% dark:hover:from-orange-500/20 dark:hover:via-100% dark:hover:via-orange-500/10 dark:hover:to-100% dark:hover:to-transparent",
                 "hover:scale-[1.02] hover:cursor-pointer"
               )}
+              onClick={onAction}
             >
               <span className="font-medium text-sm text-zinc-900 transition-colors duration-300 group-hover/start:text-orange-600 dark:text-white dark:group-hover/start:text-orange-400">
                 Start today

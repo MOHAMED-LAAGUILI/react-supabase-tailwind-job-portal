@@ -15,11 +15,11 @@ if (!PUBLISHABLE_KEY) {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ClerkProvider
+      afterSignOutUrl="/"
       appearance={{
         baseTheme: dark,
       }}
       publishableKey={PUBLISHABLE_KEY}
-      afterSignOutUrl="/"
     >
       <App />
     </ClerkProvider>

@@ -1,36 +1,36 @@
 export interface Company {
   id: number;
-  name: string;
   logo_url: string;
+  name: string;
 }
 
 export interface Job {
-  id: number;
-  title: string;
-  description: string;
-  location: string;
-  country_code?: string;
-  company_id: number;
-  requirements: string;
-  isOpen: boolean;
-  recruiter_id: string;
-  created_at: string;
-  company: Company;
   applications: Application[];
+  company: Company;
+  company_id: number;
+  country_code?: string;
+  created_at: string;
+  description: string;
+  id: number;
+  isOpen: boolean;
+  location: string;
+  recruiter_id: string;
+  requirements: string;
   saved: { id: number }[];
+  title: string;
 }
 
 export interface SavedJob {
   id: number;
+  job: Job;
   job_id: number;
   user_id: string;
-  job: Job;
 }
 
 export interface Application {
+  created_at: string;
   id: number;
   job_id: number;
-  user_id: string;
   status: string;
-  created_at: string;
+  user_id: string;
 }

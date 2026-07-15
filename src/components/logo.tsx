@@ -9,9 +9,9 @@ type LogoProps = {
 export const Logo = ({ className, alt }: LogoProps) => (
   <Link to="/">
     <img
-      src="/logo-dark.png"
-      className={cn("dark:invert", className)}
       alt={alt || "Hirrd Logo"}
+      className={cn("dark:invert", className)}
+      src="/logo-dark.png"
     />
   </Link>
 );

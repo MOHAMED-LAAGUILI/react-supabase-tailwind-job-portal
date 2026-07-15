@@ -4,8 +4,8 @@ import { type FileError, type FileRejection, useDropzone } from "react-dropzone"
 import { supabaseClient } from "../utils/supabase";
 
 interface FileWithPreview extends File {
-  preview?: string;
   errors: readonly FileError[];
+  preview?: string;
 }
 
 type UseSupabaseUploadOptions = {

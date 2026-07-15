@@ -53,8 +53,8 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
     <Card className="relative overflow-hidden">
       {loadingHiringStatus && (
         <BarLoader
-          width={"100%"}
           color="#36d7b7"
+          width={"100%"}
         />
       )}
       <CardHeader>
@@ -75,10 +75,10 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
             )}
           </div>
           <Button
-            size="icon"
-            variant="ghost"
             className="shrink-0 h-8 w-8 text-muted-foreground hover:text-foreground"
             onClick={handleDownload}
+            size="icon"
+            variant="ghost"
           >
             <Download size={16} />
           </Button>
@@ -110,8 +110,8 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
           </span>
         ) : (
           <Select
-            onValueChange={value => handleStatusChange(value ?? "")}
             defaultValue={application.status}
+            onValueChange={value => handleStatusChange(value ?? "")}
           >
             <SelectTrigger className="w-40 h-8 text-xs">
               <SelectValue placeholder="Status" />

@@ -40,8 +40,8 @@ const JobPage = () => {
     return (
       <BarLoader
         className="mb-4"
-        width={"100%"}
         color="#36d7b7"
+        width={"100%"}
       />
     );
   }
@@ -57,14 +57,14 @@ const JobPage = () => {
           <div className="h-14 w-14 rounded-lg border bg-card flex items-center justify-center overflow-hidden shrink-0">
             {job?.company?.logo_url ? (
               <img
-                src={job.company.logo_url}
                 alt=""
                 className="h-10 w-10 object-cover"
+                src={job.company.logo_url}
               />
             ) : (
               <Building2
-                size={20}
                 className="text-muted-foreground"
+                size={20}
               />
             )}
           </div>
@@ -79,22 +79,22 @@ const JobPage = () => {
       <div className="flex flex-wrap gap-3">
         <div className="flex items-center gap-1.5 text-sm bg-muted rounded-full px-3 py-1.5">
           <MapPinIcon
-            size={14}
             className="text-muted-foreground"
+            size={14}
           />
           {job?.country_code && (
             <img
-              src={`https://flagcdn.com/w20/${job.country_code.toLowerCase()}.png`}
               alt=""
               className="h-3.5 w-5 object-cover rounded-sm"
+              src={`https://flagcdn.com/w20/${job.country_code.toLowerCase()}.png`}
             />
           )}
           {job?.location}
         </div>
         <div className="flex items-center gap-1.5 text-sm bg-muted rounded-full px-3 py-1.5">
           <Briefcase
-            size={14}
             className="text-muted-foreground"
+            size={14}
           />
           {job?.applications?.length ?? 0} Applicant{(job?.applications?.length ?? 0) !== 1 ? "s" : ""}
         </div>
@@ -115,8 +115,8 @@ const JobPage = () => {
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium">Hiring Status:</span>
           <Select
-            onValueChange={handleStatusChange}
             defaultValue={job?.isOpen ? "open" : "closed"}
+            onValueChange={handleStatusChange}
           >
             <SelectTrigger className="w-36 h-9 text-sm">
               <SelectValue />
@@ -128,8 +128,8 @@ const JobPage = () => {
           </Select>
           {loadingHiringStatus && (
             <BarLoader
-              width={"100%"}
               color="#36d7b7"
+              width={"100%"}
             />
           )}
         </div>
@@ -144,22 +144,17 @@ const JobPage = () => {
       {/* Requirements */}
       <section>
         <h2 className="text-xl sm:text-2xl font-bold mb-3">What we are looking for</h2>
-        <div
-          className="text-muted-foreground"
-        
-        >
-         {job?.requirements}
-        </div>
+        <div className="text-muted-foreground">{job?.requirements}</div>
       </section>
 
       {/* Apply or Applied button */}
       {!isRecruiter && (
         <div className="flex justify-center sm:justify-start">
           <ApplyJobDialog
+            applied={hasApplied as any}
+            fetchJob={fnJob}
             job={job as any}
             user={user as any}
-            fetchJob={fnJob}
-            applied={hasApplied as any}
           />
         </div>
       )}
@@ -171,8 +166,8 @@ const JobPage = () => {
           <div className="grid md:grid-cols-2 gap-4">
             {job.applications.map(application => (
               <ApplicationCard
-                key={application.id}
                 application={application as any}
+                key={application.id}
               />
             ))}
           </div>

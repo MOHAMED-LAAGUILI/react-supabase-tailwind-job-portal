@@ -32,14 +32,14 @@ export function TestimonialList({ direction, data }: { direction?: "right" | "le
       <MarqueeContent direction={direction}>
         {data.map(item => (
           <MarqueeItem
-            key={item.authorName}
             className="mx-0 h-full w-xs border-r border-line"
+            key={item.authorName}
           >
             <a
               className="block h-full transition-[background-color] hover:bg-accent/15"
               href={item.url}
-              target="_blank"
               rel="noopener noreferrer"
+              target="_blank"
             >
               <TestimonialItem {...item} />
             </a>
@@ -60,8 +60,8 @@ function TestimonialItem({ authorAvatar, authorName, authorTagline, quote }: Tes
       <TestimonialAuthor>
         <TestimonialAvatar>
           <TestimonialAvatarImg
-            src={authorAvatar}
             alt={authorName}
+            src={authorAvatar}
           />
           <TestimonialAvatarRing />
         </TestimonialAvatar>

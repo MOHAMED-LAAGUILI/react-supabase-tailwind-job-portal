@@ -68,13 +68,17 @@ export async function getSingleJob(token: string, { job_id }: { job_id: unknown 
 export async function saveJob(
   token: string,
   { alreadySaved }: { alreadySaved: unknown },
-  saveData: { job_id: unknown }
+  saveData: { job_id: unknown; user_id?: string }
 ) {
   const supabase = await supabaseClient(token);
 
   if (alreadySaved) {
-    // If the job is already saved, remove it
-    const { data, error: deleteError } = await supabase.from("saved_jobs").delete().eq("job_id", saveData.job_id);
+    const { data, error: deleteError } = await supabase
+      .from("saved_jobs")
+      .delete()
+      .eq("job_id", saveData.job_id)
+      .eq("user_id", saveData.user_id)
+      .select();
 
     if (deleteError) {
       console.error("Error removing saved job:", deleteError);
@@ -83,8 +87,10 @@ export async function saveJob(
 
     return data;
   } else {
-    // If the job is not saved, add it to saved jobs
-    const { data, error: insertError } = await supabase.from("saved_jobs").insert([saveData]).select();
+    const { data, error: insertError } = await supabase
+      .from("saved_jobs")
+      .insert([{ user_id: saveData.user_id, job_id: saveData.job_id }])
+      .select();
 
     if (insertError) {
       console.error("Error saving job:", insertError);

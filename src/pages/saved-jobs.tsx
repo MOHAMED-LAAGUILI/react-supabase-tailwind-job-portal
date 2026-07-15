@@ -21,8 +21,8 @@ const SavedJobs = () => {
     return (
       <BarLoader
         className="mb-4"
-        width={"100%"}
         color="#36d7b7"
+        width={"100%"}
       />
     );
   }
@@ -42,8 +42,8 @@ const SavedJobs = () => {
 
       {loadingSavedJobs && (
         <BarLoader
-          width={"100%"}
           color="#36d7b7"
+          width={"100%"}
         />
       )}
 
@@ -53,8 +53,8 @@ const SavedJobs = () => {
             <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
               {savedJobs?.map(saved => (
                 <JobCard
-                  key={saved.id}
                   job={saved?.job}
+                  key={saved.id}
                   onJobAction={fnSavedJobs}
                   savedInit={true}
                 />

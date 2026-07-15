@@ -1,3 +1,11 @@
+-- ==========================================================
+-- JOBS TABLE
+-- Stores job postings: title, description, location (region),
+-- country_code (for flag display), requirements, company, and
+-- hiring status (isOpen).
+-- RLS: open jobs are public; recruiters manage their own posts.
+-- ==========================================================
+
 DROP TABLE IF EXISTS jobs CASCADE;
 
 CREATE TABLE jobs (

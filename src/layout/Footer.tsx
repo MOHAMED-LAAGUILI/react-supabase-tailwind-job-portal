@@ -45,10 +45,10 @@ export function Footer() {
             {socialLinks.map(({ icon, href }, index) => (
               <Button
                 key={`social-${href}-${index}`}
+                nativeButton={false}
+                render={<a href={href} />}
                 size="icon"
                 variant="outline"
-                render={<a href={href} />}
-                nativeButton={false}
               >
                 {icon}
               </Button>
@@ -58,8 +58,8 @@ export function Footer() {
           <div className="flex gap-4">
             <Button
               className="h-11"
-              render={<a href="#" />}
               nativeButton={false}
+              render={<a href="#" />}
             >
               <GooglePlayIcon className="size-5" />
               <div className="flex flex-col items-start justify-center pr-2 text-left">
@@ -70,8 +70,8 @@ export function Footer() {
 
             <Button
               className="h-11"
-              render={<a href="#" />}
               nativeButton={false}
+              render={<a href="#" />}
             >
               <AppleIcon className="size-5" />
               <div className="flex flex-col items-start justify-center pr-2 text-left">

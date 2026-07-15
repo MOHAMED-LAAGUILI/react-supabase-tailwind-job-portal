@@ -22,10 +22,7 @@ const JobListing = () => {
   const { isLoaded } = useUser();
 
   const countries = useMemo(() => Country.getAllCountries().sort((a, b) => a.name.localeCompare(b.name)), []);
-  const regions = useMemo(
-    () => (selectedCountry ? State.getStatesOfCountry(selectedCountry) : []),
-    [selectedCountry]
-  );
+  const regions = useMemo(() => (selectedCountry ? State.getStatesOfCountry(selectedCountry) : []), [selectedCountry]);
 
   const { data: companies, fn: fnCompanies } = useFetch<Company[]>(getCompanies);
 
@@ -71,8 +68,8 @@ const JobListing = () => {
     return (
       <BarLoader
         className="mb-4"
-        width={"100%"}
         color="#36d7b7"
+        width={"100%"}
       />
     );
   }
@@ -89,106 +86,114 @@ const JobListing = () => {
       </div>
 
       <form
-        onSubmit={handleSearch}
         className="space-y-2 mb-6"
+        onSubmit={handleSearch}
       >
         <div className="flex gap-1.5">
           <div className="relative flex-4 min-w-0">
             <Search
-              size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+              size={15}
             />
             <Input
-              type="text"
-              placeholder="Search jobs by title..."
-              name="search-query"
-              defaultValue={searchQuery}
               className="h-10 pl-9 pr-3 text-sm"
+              defaultValue={searchQuery}
+              name="search-query"
+              placeholder="Search jobs by title..."
+              type="text"
             />
           </div>
           <Button
-            type="submit"
             className="h-10 px-3 gap-1.5 text-sm shrink-0 flex-1"
+            type="submit"
           >
             <Search size={15} />
             Search
           </Button>
         </div>
 
-       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto] gap-3">
-  <CountryCombobox
-    countries={countries}
-    selectedCountry={selectedCountry}
-    onSelect={setSelectedCountry}
-    hideLabel
-  />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto] gap-3">
+          <CountryCombobox
+            countries={countries}
+            hideLabel
+            onSelect={setSelectedCountry}
+            selectedCountry={selectedCountry}
+          />
 
-  <Select
-    value={location}
-    onValueChange={value => setLocation(value ?? "")}
-    disabled={!selectedCountry}
-  >
-    <SelectTrigger className="data-[size=default]:h-10 h-10 w-full">
-      <MapPin className="size-4 text-muted-foreground" />
-      <SelectValue
-        placeholder={selectedCountry ? "Region" : "Country first"}
-      />
-    </SelectTrigger>
+          <Select
+            disabled={!selectedCountry}
+            onValueChange={value => setLocation(value ?? "")}
+            value={location}
+          >
+            <SelectTrigger className="data-[size=default]:h-10 h-10 w-full">
+              <MapPin className="size-4 text-muted-foreground" />
+              <SelectValue placeholder={selectedCountry ? "Region" : "Country first"} />
+            </SelectTrigger>
 
-    <SelectContent>
-      <SelectGroup>
-        {regions.map(({ isoCode, name }) => (
-          <SelectItem key={isoCode} value={name}>
-            {name}
-          </SelectItem>
-        ))}
-      </SelectGroup>
-    </SelectContent>
-  </Select>
+            <SelectContent>
+              <SelectGroup>
+                {regions.map(({ isoCode, name }) => (
+                  <SelectItem
+                    key={isoCode}
+                    value={name}
+                  >
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-  <Select
-    value={company_id}
-    onValueChange={value => setCompany_id(value ?? "")}
-  >
-    <SelectTrigger className="data-[size=default]:h-10 h-10 w-full">
-                          <Building2
-                            size={15}
-                            className="text-muted-foreground shrink-0"
-                          />
-                          <span className="flex-1 text-left truncate">
-                            {selectedCompany ? `${selectedCompany.id} - ${selectedCompany.name}` : <span className="text-muted-foreground">Select company</span>}
-                          </span>
-                        </SelectTrigger>
-                        
-    <SelectContent>
-      <SelectGroup>
-        {companies?.map(({ id, name }) => (
-          <SelectItem key={id} value={String(id)}>
-            {id} - {name}
-          </SelectItem>
-        ))}
-      </SelectGroup>
-    </SelectContent>
-  </Select>
+          <Select
+            onValueChange={value => setCompany_id(value ?? "")}
+            value={company_id}
+          >
+            <SelectTrigger className="data-[size=default]:h-10 h-10 w-full">
+              <Building2
+                className="text-muted-foreground shrink-0"
+                size={15}
+              />
+              <span className="flex-1 text-left truncate">
+                {selectedCompany ? (
+                  `${selectedCompany.id} - ${selectedCompany.name}`
+                ) : (
+                  <span className="text-muted-foreground">Select company</span>
+                )}
+              </span>
+            </SelectTrigger>
 
-  {hasActiveFilters && (
-    <Button
-      variant="outline"
-      onClick={clearFilters}
-      className="h-10 w-full sm:w-auto whitespace-nowrap"
-    >
-      <X className="size-4" />
-      Clear
-    </Button>
-  )}
-</div>
+            <SelectContent>
+              <SelectGroup>
+                {companies?.map(({ id, name }) => (
+                  <SelectItem
+                    key={id}
+                    value={String(id)}
+                  >
+                    {id} - {name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          {hasActiveFilters && (
+            <Button
+              className="h-10 w-full sm:w-auto whitespace-nowrap"
+              onClick={clearFilters}
+              variant="outline"
+            >
+              <X className="size-4" />
+              Clear
+            </Button>
+          )}
+        </div>
       </form>
 
       {loadingJobs && (
         <div className="mt-4">
           <BarLoader
-            width={"100%"}
             color="#36d7b7"
+            width={"100%"}
           />
         </div>
       )}
@@ -199,8 +204,8 @@ const JobListing = () => {
             <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
               {jobs.map(job => (
                 <JobCard
-                  key={job.id}
                   job={job}
+                  key={job.id}
                   savedInit={job?.saved?.length > 0}
                 />
               ))}
@@ -215,9 +220,9 @@ const JobListing = () => {
               <p className="text-sm">Try adjusting your search or filters</p>
               {hasActiveFilters && (
                 <Button
-                  variant="outline"
-                  onClick={clearFilters}
                   className="mt-2"
+                  onClick={clearFilters}
+                  variant="outline"
                 >
                   Clear all filters
                 </Button>
@@ -257,17 +262,17 @@ function CountryCombobox({
     <div className="space-y-2">
       {!hideLabel && <label className="text-sm font-medium">Country</label>}
       <button
-        type="button"
-        onClick={() => setOpen(true)}
         className={`flex ${height} w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 text-sm transition-colors hover:bg-accent cursor-pointer`}
+        onClick={() => setOpen(true)}
+        type="button"
       >
         <span className="flex items-center gap-2 truncate">
           {selected ? (
             <>
               <img
-                src={`https://flagcdn.com/w20/${selected.isoCode.toLowerCase()}.png`}
                 alt=""
                 className="h-4 w-5 object-cover rounded-sm shrink-0"
+                src={`https://flagcdn.com/w20/${selected.isoCode.toLowerCase()}.png`}
               />
               <span className="truncate">{selected.name}</span>
             </>
@@ -275,15 +280,18 @@ function CountryCombobox({
             <span className="text-muted-foreground">Select country</span>
           )}
         </span>
-        <ChevronDown size={14} className="text-muted-foreground shrink-0" />
+        <ChevronDown
+          className="text-muted-foreground shrink-0"
+          size={14}
+        />
       </button>
 
       <Dialog
-        open={open}
         onOpenChange={v => {
           setOpen(v);
           if (!v) setSearch("");
         }}
+        open={open}
       >
         <DialogContent className="max-w-sm">
           <DialogHeader>
@@ -291,35 +299,35 @@ function CountryCombobox({
           </DialogHeader>
           <div className="relative">
             <Search
-              size={14}
               className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+              size={14}
             />
             <Input
-              value={search}
+              autoFocus
+              className="pl-8"
               onChange={e => setSearch(e.target.value)}
               placeholder="Search countries..."
-              className="pl-8"
-              autoFocus
+              value={search}
             />
           </div>
           <div className="max-h-60 overflow-y-auto space-y-0.5 -mx-1">
             {filtered.map(({ isoCode, name }) => (
               <button
+                className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-left transition-colors cursor-pointer ${
+                  selectedCountry === isoCode ? "bg-accent font-medium" : "hover:bg-accent"
+                }`}
                 key={isoCode}
-                type="button"
                 onClick={() => {
                   onSelect(isoCode);
                   setOpen(false);
                   setSearch("");
                 }}
-                className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-left transition-colors cursor-pointer ${
-                  selectedCountry === isoCode ? "bg-accent font-medium" : "hover:bg-accent"
-                }`}
+                type="button"
               >
                 <img
-                  src={`https://flagcdn.com/w20/${isoCode.toLowerCase()}.png`}
                   alt=""
                   className="h-4 w-5 object-cover rounded-sm shrink-0"
+                  src={`https://flagcdn.com/w20/${isoCode.toLowerCase()}.png`}
                 />
                 {name}
               </button>

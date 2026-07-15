@@ -41,11 +41,11 @@ function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
 function DialogOverlay({ className, ...props }: DialogPrimitive.Backdrop.Props) {
   return (
     <DialogPrimitive.Backdrop
-      data-slot="dialog-overlay"
       className={cn(
         "fixed inset-0 z-50 bg-black/50 backdrop-blur-xs data-ending-style:opacity-0 data-starting-style:opacity-0 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 transition-opacity duration-300",
         className
       )}
+      data-slot="dialog-overlay"
       {...props}
     />
   );
@@ -57,11 +57,11 @@ function DialogContent({ className, children, ...props }: DialogPrimitive.Popup.
       <DialogOverlay />
       <DialogPrimitive.Viewport className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <DialogPrimitive.Popup
-          data-slot="dialog-content"
           className={cn(
             "relative w-full max-w-md rounded-xl border bg-popover p-6 shadow-lg data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 transition-all duration-200",
             className
           )}
+          data-slot="dialog-content"
           {...props}
         >
           {children}
@@ -74,8 +74,8 @@ function DialogContent({ className, children, ...props }: DialogPrimitive.Popup.
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      data-slot="dialog-header"
       className={cn("mb-4 flex flex-col gap-1", className)}
+      data-slot="dialog-header"
       {...props}
     />
   );
@@ -84,8 +84,8 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
 function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      data-slot="dialog-footer"
       className={cn("mt-6 flex flex-col-reverse sm:flex-row gap-2", className)}
+      data-slot="dialog-footer"
       {...props}
     />
   );
@@ -94,8 +94,8 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
 function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   return (
     <DialogPrimitive.Title
-      data-slot="dialog-title"
       className={cn("text-lg font-semibold", className)}
+      data-slot="dialog-title"
       {...props}
     />
   );
@@ -104,8 +104,8 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
 function DialogDescription({ className, ...props }: DialogPrimitive.Description.Props) {
   return (
     <DialogPrimitive.Description
-      data-slot="dialog-description"
       className={cn("text-sm text-muted-foreground", className)}
+      data-slot="dialog-description"
       {...props}
     />
   );

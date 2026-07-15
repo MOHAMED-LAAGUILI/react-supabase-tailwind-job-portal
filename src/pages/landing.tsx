@@ -39,8 +39,8 @@ const LandingPage = () => {
           <>
             <Link to={"/jobs"}>
               <Button
-                variant="default"
                 className="text-lg px-6 py-3 h-auto gap-2"
+                variant="default"
               >
                 <Search size={20} />
                 Find Jobs
@@ -48,8 +48,8 @@ const LandingPage = () => {
             </Link>
             <Link to={"/post-job"}>
               <Button
-                variant="default"
                 className="text-lg px-6 py-3 h-auto gap-2"
+                variant="default"
               >
                 <BriefcaseBusiness size={20} />
                 Post a Job
@@ -59,8 +59,8 @@ const LandingPage = () => {
         ) : (
           <Link to={"/jobs"}>
             <Button
-              variant="default"
               className="text-lg px-6 py-3 h-auto gap-2"
+              variant="default"
             >
               <Search size={20} />
               Get Started
@@ -103,19 +103,19 @@ const LandingPage = () => {
 
       <section className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-8 md:flex-row">
         <CardFlip
-          title="Find Jobs"
-          subtitle="Browse curated opportunities"
           description="Search roles that match your skills, save favorites, and apply in minutes."
           features={["Smart job search", "Application tracking", "Saved listings"]}
           onAction={() => navigate("/jobs")}
+          subtitle="Browse curated opportunities"
+          title="Find Jobs"
         />
 
         <CardFlip
-          title="Post a Job"
-          subtitle="Reach qualified candidates faster"
           description="Create a listing, review applicants, and hire the right talent."
           features={["Fast job posting", "Applicant management", "Talent discovery"]}
           onAction={() => navigate("/post-job")}
+          subtitle="Reach qualified candidates faster"
+          title="Post a Job"
         />
       </section>
 
@@ -128,14 +128,14 @@ const LandingPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Accordion
-              multiple
               className="flex flex-col gap-4"
+              multiple
             >
               {faqs.slice(0, Math.ceil(faqs.length / 2)).map(item => (
                 <AccordionItem
+                  className="rounded-md !border"
                   key={item.question}
                   value={item.question}
-                  className="rounded-md !border"
                 >
                   <AccordionTrigger className="cursor-pointer px-4 py-4">{item.question}</AccordionTrigger>
                   <AccordionContent className="text-muted-foreground px-4">{item.answer}</AccordionContent>
@@ -143,14 +143,14 @@ const LandingPage = () => {
               ))}
             </Accordion>
             <Accordion
-              multiple
               className="flex flex-col gap-4"
+              multiple
             >
               {faqs.slice(Math.ceil(faqs.length / 2)).map(item => (
                 <AccordionItem
+                  className="rounded-md !border"
                   key={item.question}
                   value={item.question}
-                  className="rounded-md !border"
                 >
                   <AccordionTrigger className="cursor-pointer px-4 py-4">{item.question}</AccordionTrigger>
                   <AccordionContent className="text-muted-foreground px-4">{item.answer}</AccordionContent>

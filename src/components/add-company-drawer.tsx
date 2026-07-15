@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Upload, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { BarLoader } from "react-spinners";
 import { z } from "zod";
 import { addNewCompany } from "../api/apiCompanies";
@@ -50,6 +51,7 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
 
   useEffect(() => {
     if (Array.isArray(dataAddCompany) && dataAddCompany.length > 0) {
+      toast.success("Company created successfully");
       fetchCompanies();
       reset();
       upload.setFiles([]);
@@ -59,8 +61,8 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
 
   return (
     <Dialog
-      open={open}
       onOpenChange={setOpen}
+      open={open}
     >
       <DialogTrigger className="inline-flex items-center justify-center shrink-0 h-8 w-8 rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer">
         <Plus size={16} />
@@ -91,17 +93,17 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
                 <div className="mt-3 flex items-center justify-center">
                   <div className="relative inline-flex">
                     <img
-                      src={upload.files[0].preview}
                       alt="Logo preview"
                       className="h-20 w-20 rounded-lg border object-cover"
+                      src={upload.files[0].preview}
                     />
                     <button
-                      type="button"
+                      className="absolute -top-2 -right-2 rounded-full bg-background border p-0.5 text-muted-foreground hover:text-foreground cursor-pointer"
                       onClick={e => {
                         e.stopPropagation();
                         upload.setFiles([]);
                       }}
-                      className="absolute -top-2 -right-2 rounded-full bg-background border p-0.5 text-muted-foreground hover:text-foreground cursor-pointer"
+                      type="button"
                     >
                       <X size={14} />
                     </button>
@@ -117,27 +119,27 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
 
           {loadingAddCompany && (
             <BarLoader
-              width={"100%"}
               color="#36d7b7"
+              width={"100%"}
             />
           )}
         </form>
 
         <div className="mt-6 flex flex-col-reverse sm:flex-row gap-2">
           <Button
-            type="button"
-            onClick={handleSubmit(onSubmit)}
-            disabled={upload.files.length === 0}
             className="gap-2 flex-1"
+            disabled={upload.files.length === 0}
+            onClick={handleSubmit(onSubmit)}
+            type="button"
           >
             <Upload size={15} />
             Add Company
           </Button>
           <Button
+            className="gap-2"
+            onClick={() => setOpen(false)}
             type="button"
             variant="outline"
-            onClick={() => setOpen(false)}
-            className="gap-2"
           >
             <X size={15} />
             Cancel

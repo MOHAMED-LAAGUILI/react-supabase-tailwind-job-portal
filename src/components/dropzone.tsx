@@ -76,8 +76,8 @@ const DropzoneContent = ({ className }: { className?: string }) => {
     return (
       <div className={cn("flex flex-row items-center gap-x-2 justify-center", className)}>
         <CheckCircle
-          size={16}
           className="text-primary"
+          size={16}
         />
         <p className="text-primary text-sm">
           Successfully uploaded {files.length} file{files.length > 1 ? "s" : ""}
@@ -94,15 +94,15 @@ const DropzoneContent = ({ className }: { className?: string }) => {
 
         return (
           <div
-            key={`${file.name}-${idx}`}
             className="flex items-center gap-x-4 border-b py-2 first:mt-4 last:mb-4 "
+            key={`${file.name}-${idx}`}
           >
             {file.type.startsWith("image/") ? (
               <div className="h-10 w-10 rounded-sm border overflow-hidden shrink-0 bg-muted flex items-center justify-center">
                 <img
-                  src={file.preview}
                   alt={file.name}
                   className="object-cover"
+                  src={file.preview}
                 />
               </div>
             ) : (
@@ -113,8 +113,8 @@ const DropzoneContent = ({ className }: { className?: string }) => {
 
             <div className="shrink grow flex flex-col items-start truncate">
               <p
-                title={file.name}
                 className="text-sm truncate max-w-full"
+                title={file.name}
               >
                 {file.name}
               </p>
@@ -141,10 +141,10 @@ const DropzoneContent = ({ className }: { className?: string }) => {
 
             {!loading && !isSuccessfullyUploaded && (
               <Button
-                size="icon"
-                variant="link"
                 className="shrink-0 justify-self-end text-muted-foreground hover:text-foreground"
                 onClick={() => handleRemoveFile(file.name)}
+                size="icon"
+                variant="link"
               >
                 <X />
               </Button>
@@ -161,9 +161,9 @@ const DropzoneContent = ({ className }: { className?: string }) => {
       {files.length > 0 && !exceedMaxFiles && (
         <div className="mt-2">
           <Button
-            variant="outline"
-            onClick={onUpload}
             disabled={files.some(file => file.errors.length !== 0) || loading}
+            onClick={onUpload}
+            variant="outline"
           >
             {loading ? (
               <>
@@ -190,8 +190,8 @@ const DropzoneEmptyState = ({ className }: { className?: string }) => {
   return (
     <div className={cn("flex flex-col items-center gap-y-2", className)}>
       <Upload
-        size={20}
         className="text-muted-foreground"
+        size={20}
       />
       <p className="text-sm">
         Upload{!!maxFiles && maxFiles > 1 ? ` ${maxFiles}` : ""} file
@@ -201,8 +201,8 @@ const DropzoneEmptyState = ({ className }: { className?: string }) => {
         <p className="text-xs text-muted-foreground">
           Drag and drop or{" "}
           <a
-            onClick={() => inputRef.current?.click()}
             className="underline cursor-pointer transition hover:text-foreground"
+            onClick={() => inputRef.current?.click()}
           >
             select {maxFiles === 1 ? `file` : "files"}
           </a>{" "}

@@ -1,22 +1,24 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+
   "assist": {
     "actions": {
       "source": {
         "organizeImports": "on",
-        "useSortedKeys": "on"
+        "useSortedKeys": {
+          "level": "on",
+          "options": {
+            "sortOrder": "natural"
+          }
+        }
       }
     },
     "enabled": true,
-    "includes": [
-      "src/**/*.{ts,tsx,js,jsx}"
-    ]
+    "includes": ["src/**/*.{ts,tsx,js,jsx}"]
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "src/**/*.{ts,tsx,js,jsx}"
-    ]
+    "includes": ["src/**/*.{ts,tsx,js,jsx}", "!!public"]
   },
   "formatter": {
     "attributePosition": "multiline",
@@ -54,7 +56,10 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      }
     }
   },
   "vcs": {
@@ -62,8 +67,5 @@
     "enabled": true,
     "useIgnoreFile": true
   },
-  "extends": [
-    "ultracite/biome/core",
-    "ultracite/biome/react"
-  ]
+  "extends": ["ultracite/biome/core", "ultracite/biome/react"]
 }

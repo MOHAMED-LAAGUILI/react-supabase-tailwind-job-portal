@@ -1,6 +1,7 @@
 import { SignedIn, SignedOut, SignIn, UserButton, useUser } from "@clerk/clerk-react";
 import { BriefcaseBusiness, Heart, LogIn, PenBox } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useSearchParams } from "react-router-dom";
 import { Logo } from "../components/logo";
 import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
@@ -11,6 +12,21 @@ const Header = () => {
 
   const [search, setSearch] = useSearchParams();
   const { user } = useUser();
+  const prevUserRef = useRef(user);
+
+  useEffect(() => {
+    if (prevUserRef.current === undefined) {
+      prevUserRef.current = user;
+      return;
+    }
+    if (prevUserRef.current === null && user) {
+      toast.success("Logged in successfully");
+    }
+    if (prevUserRef.current && user === null) {
+      toast("Logged out", { icon: "👋" });
+    }
+    prevUserRef.current = user;
+  }, [user]);
 
   useEffect(() => {
     if (search.get("sign-in")) {
@@ -34,9 +50,9 @@ const Header = () => {
           <div className="flex gap-4 items-center">
             <SignedOut>
               <Button
-                variant="outline"
-                onClick={() => setShowSignIn(true)}
                 className="gap-2"
+                onClick={() => setShowSignIn(true)}
+                variant="outline"
               >
                 <LogIn size={16} />
                 Login
@@ -46,12 +62,12 @@ const Header = () => {
               {user?.unsafeMetadata?.role === "recruiter" && (
                 <Link to="/post-job">
                   <Button
-                    variant="destructive"
                     className="rounded-full"
+                    variant="destructive"
                   >
                     <PenBox
-                      size={20}
                       className="mr-2"
+                      size={20}
                     />
                     Post a Job
                   </Button>
@@ -69,14 +85,14 @@ const Header = () => {
               >
                 <UserButton.MenuItems>
                   <UserButton.Link
+                    href="/my-jobs"
                     label="My Jobs"
                     labelIcon={<BriefcaseBusiness size={15} />}
-                    href="/my-jobs"
                   />
                   <UserButton.Link
+                    href="/saved-jobs"
                     label="Saved Jobs"
                     labelIcon={<Heart size={15} />}
-                    href="/saved-jobs"
                   />
                   <UserButton.Action label="manageAccount" />
                 </UserButton.MenuItems>
@@ -93,8 +109,8 @@ const Header = () => {
         >
           <div className="w-full max-w-md mx-4">
             <SignIn
-              signUpForceRedirectUrl="/onboarding"
               fallbackRedirectUrl="/onboarding"
+              signUpForceRedirectUrl="/onboarding"
             />
           </div>
         </div>

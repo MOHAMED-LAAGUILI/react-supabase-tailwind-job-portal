@@ -1,3 +1,11 @@
+-- ==========================================================
+-- APPLICATIONS TABLE
+-- Candidates submit applications with resume, experience,
+-- education, and skills. Status tracks the hiring pipeline
+-- (applied → interviewing → hired / rejected).
+-- RLS: candidates see their own; recruiters see their job's.
+-- ==========================================================
+
 DROP TABLE IF EXISTS applications CASCADE;
 
 CREATE TABLE applications (

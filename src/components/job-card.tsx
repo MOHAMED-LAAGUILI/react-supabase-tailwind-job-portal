@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { Briefcase, Clock, Heart, MapPinIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 import { deleteJob, saveJob } from "../api/apiJobs";
@@ -9,6 +10,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 
 interface JobCardProps {
+  isMyJob?: boolean;
   job: {
     id: number;
     title: string;
@@ -19,14 +21,17 @@ interface JobCardProps {
     saved: { id: number }[];
     created_at: string;
   };
-  savedInit?: boolean;
   onJobAction?: () => void;
-  isMyJob?: boolean;
+  savedInit?: boolean;
 }
 
 const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = false }: JobCardProps) => {
   const [saved, setSaved] = useState(savedInit);
   const { user } = useUser();
+
+  useEffect(() => {
+    setSaved(savedInit);
+  }, [savedInit]);
 
   const { loading: loadingDeleteJob, fn: fnDeleteJob } = useFetch(deleteJob, {
     job_id: job.id,
@@ -34,14 +39,14 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
 
   const {
     loading: loadingSavedJob,
-    data: savedJob,
     fn: fnSavedJob,
-  } = useFetch(saveJob as any, {
-    job_id: job.id,
-    user_id: user?.id,
-  });
+  } = useFetch(saveJob as any, { alreadySaved: saved });
 
   const handleSaveJob = async () => {
+    setSaved(!saved);
+    toast(saved ? "Job removed from saved" : "Job saved successfully", {
+      icon: saved ? "💔" : "❤️",
+    });
     await fnSavedJob({
       job_id: job.id,
       user_id: user?.id,
@@ -54,10 +59,6 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
     onJobAction();
   };
 
-  useEffect(() => {
-    if (savedJob !== undefined) setSaved(Array.isArray(savedJob) && savedJob.length > 0);
-  }, [savedJob]);
-
   const daysAgo = Math.floor((Date.now() - new Date(job.created_at).getTime()) / (1000 * 60 * 60 * 24));
 
   return (
@@ -65,8 +66,8 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
       {loadingDeleteJob && (
         <BarLoader
           className="mt-4"
-          width={"100%"}
           color="#36d7b7"
+          width={"100%"}
         />
       )}
 
@@ -75,17 +76,20 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
           <div className="flex items-center gap-3">
             {job.company && (
               <img
-                src={job.company.logo_url}
                 alt={job.company.name}
                 className="h-9 w-9 rounded-lg object-contain border bg-background shrink-0"
                 onError={e => {
                   (e.target as HTMLImageElement).src = "";
                   (e.target as HTMLImageElement).style.display = "none";
                 }}
+                src={job.company.logo_url}
               />
             )}
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Briefcase size={14} className="shrink-0" />
+              <Briefcase
+                className="shrink-0"
+                size={14}
+              />
               <span className="truncate">{job.company?.name}</span>
             </div>
           </div>
@@ -97,9 +101,9 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
             </span>
             {isMyJob && (
               <Trash2Icon
-                size={14}
                 className="text-muted-foreground hover:text-destructive cursor-pointer transition-colors"
                 onClick={handleDeleteJob}
+                size={14}
               />
             )}
           </div>
@@ -114,9 +118,9 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
             <MapPinIcon size={14} />
             {job.country_code && (
               <img
-                src={`https://flagcdn.com/w20/${job.country_code.toLowerCase()}.png`}
                 alt=""
                 className="h-3.5 w-5 object-cover rounded-sm"
+                src={`https://flagcdn.com/w20/${job.country_code.toLowerCase()}.png`}
               />
             )}
             {job.location}
@@ -129,22 +133,29 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
       </CardContent>
 
       <CardFooter className="flex gap-2 py-1">
-        <Link to={`/job/${job.id}`} className="flex-1">
-          <Button variant="default" size="sm" className="w-full text-xs">
+        <Link
+          className="flex-1"
+          to={`/job/${job.id}`}
+        >
+          <Button
+            className="w-full text-xs"
+            size="sm"
+            variant="default"
+          >
             View Details
           </Button>
         </Link>
         {!isMyJob && (
           <Button
-            variant="outline"
-            size="icon"
-            onClick={handleSaveJob}
             disabled={!!loadingSavedJob}
+            onClick={handleSaveJob}
+            size="icon"
+            variant="outline"
           >
             {saved ? (
               <Heart
-                size={16}
                 fill="hsl(var(--destructive))"
+                size={16}
                 stroke="hsl(var(--destructive))"
               />
             ) : (

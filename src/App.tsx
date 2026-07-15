@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AppLayout from "./layout/app-layout";
 import ProtectedRoute from "./layout/protected-route";
@@ -77,6 +78,12 @@ function App() {
       storageKey="vite-ui-theme"
     >
       <RouterProvider router={router} />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+        
+        }}
+      />
     </ThemeProvider>
   );
 }

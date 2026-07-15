@@ -1,3 +1,9 @@
+-- ==========================================================
+-- COMPANIES TABLE
+-- Stores company names and logo URLs.
+-- Anyone can view the list. Any authenticated user can insert.
+-- ==========================================================
+
 DROP TABLE IF EXISTS companies CASCADE;
 
 CREATE TABLE companies (
