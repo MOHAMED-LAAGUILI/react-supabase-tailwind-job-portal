@@ -1,22 +1,9 @@
 import { CheckCircle, File, Loader2, Upload, X } from "lucide-react";
-import { createContext, type PropsWithChildren, useCallback, useContext } from "react";
+import { createContext, type PropsWithChildren, useContext } from "react";
 import { Button } from "../components/ui/button";
 import { type UseSupabaseUploadReturn } from "../hooks/use-supabase-upload";
+import { formatBytes } from "../lib/format-bytes";
 import { cn } from "../lib/utils";
-
-export const formatBytes = (
-  bytes: number,
-  decimals = 2,
-  size?: "bytes" | "KB" | "MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"
-) => {
-  const k = 1000;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-  if (bytes === 0 || bytes === undefined) return size !== undefined ? `0 ${size}` : "0 bytes";
-  const i = size !== undefined ? sizes.indexOf(size) : Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-};
 
 type DropzoneContextType = Omit<UseSupabaseUploadReturn, "getRootProps" | "getInputProps">;
 
@@ -24,6 +11,7 @@ const DropzoneContext = createContext<DropzoneContextType | undefined>(undefined
 
 type DropzoneProps = UseSupabaseUploadReturn & {
   className?: string;
+  inputId?: string;
 };
 
 const Dropzone = ({
@@ -31,6 +19,7 @@ const Dropzone = ({
   children,
   getRootProps,
   getInputProps,
+  inputId,
   ...restProps
 }: PropsWithChildren<DropzoneProps>) => {
   const isSuccess = restProps.isSuccess;
@@ -53,7 +42,7 @@ const Dropzone = ({
           ),
         })}
       >
-        <input {...getInputProps()} />
+        <input {...getInputProps(inputId ? { id: inputId } : {})} />
         {children}
       </div>
     </DropzoneContext.Provider>
@@ -65,12 +54,9 @@ const DropzoneContent = ({ className }: { className?: string }) => {
 
   const exceedMaxFiles = files.length > maxFiles;
 
-  const handleRemoveFile = useCallback(
-    (fileName: string) => {
-      setFiles(files.filter(file => file.name !== fileName));
-    },
-    [files, setFiles]
-  );
+  const handleRemoveFile = (fileName: string) => {
+    setFiles(files.filter(file => file.name !== fileName));
+  };
 
   if (isSuccess) {
     return (
@@ -95,7 +81,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
         return (
           <div
             className="flex items-center gap-x-4 border-b py-2 first:mt-4 last:mb-4 "
-            key={`${file.name}-${idx}`}
+            key={file.name}
           >
             {file.type.startsWith("image/") ? (
               <div className="h-10 w-10 rounded-sm border overflow-hidden shrink-0 bg-muted flex items-center justify-center">
@@ -200,12 +186,13 @@ const DropzoneEmptyState = ({ className }: { className?: string }) => {
       <div className="flex flex-col items-center gap-y-1">
         <p className="text-xs text-muted-foreground">
           Drag and drop or{" "}
-          <a
+          <button
             className="underline cursor-pointer transition hover:text-foreground"
             onClick={() => inputRef.current?.click()}
+            type="button"
           >
             select {maxFiles === 1 ? `file` : "files"}
-          </a>{" "}
+          </button>{" "}
           to upload
         </p>
         {maxFileSize !== Number.POSITIVE_INFINITY && (

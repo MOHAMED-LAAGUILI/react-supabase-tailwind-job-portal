@@ -1,5 +1,4 @@
-"use client";
-import { animate, motion, useMotionValue } from "motion/react";
+import { animate, m, useMotionValue } from "framer-motion";
 import { useEffect, useState } from "react";
 import useMeasure from "react-use-measure";
 import { cn } from "../lib/utils";
@@ -80,7 +79,7 @@ export function InfiniteSlider({
 
   return (
     <div className={cn("overflow-hidden", className)}>
-      <motion.div
+      <m.div
         className="flex w-max"
         ref={ref}
         style={{
@@ -92,7 +91,7 @@ export function InfiniteSlider({
       >
         {children}
         {children}
-      </motion.div>
+      </m.div>
     </div>
   );
 }

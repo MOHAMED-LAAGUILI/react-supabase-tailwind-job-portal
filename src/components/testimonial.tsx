@@ -87,7 +87,7 @@ export function TestimonialAuthorTagline({ className, ...props }: ComponentProps
   );
 }
 
-export function TestimonialVerifiedBadge({ className, ...props }: ComponentProps<"span">) {
+function TestimonialVerifiedBadge({ className, ...props }: ComponentProps<"span">) {
   return (
     <span
       aria-hidden

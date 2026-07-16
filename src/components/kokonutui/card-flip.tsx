@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * @author: @dorianbaffier
  * @description: Card Flip
@@ -120,6 +118,11 @@ export default function CardFlip({
             "cursor-pointer"
           )}
           onClick={onAction}
+          onKeyDown={e => {
+            if (e.key === "Enter" || e.key === " ") onAction?.();
+          }}
+          role="button"
+          tabIndex={0}
         >
           <div className="flex-1 space-y-6">
             <div className="space-y-2">
@@ -163,6 +166,11 @@ export default function CardFlip({
                 "hover:scale-[1.02] hover:cursor-pointer"
               )}
               onClick={onAction}
+              onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") onAction?.();
+              }}
+              role="button"
+              tabIndex={0}
             >
               <span className="font-medium text-sm text-zinc-900 transition-colors duration-300 group-hover/start:text-orange-600 dark:text-white dark:group-hover/start:text-orange-400">
                 Start today

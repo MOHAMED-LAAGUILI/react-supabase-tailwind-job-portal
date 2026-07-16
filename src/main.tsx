@@ -1,27 +1,17 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+
 import "./index.css";
-import { ClerkProvider } from "@clerk/clerk-react";
-import { dark } from "@clerk/themes";
-import App from "./App.tsx";
-
-// Import your publishable key
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Publishable Key");
-}
+import App from "./App";
+import { ClerkThemeWrapper } from "./layout/clerk-theme-wrapper";
+import { ThemeProvider } from "./layout/theme-provider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ClerkProvider
-      afterSignOutUrl="/"
-      appearance={{
-        baseTheme: dark,
-      }}
-      publishableKey={PUBLISHABLE_KEY}
-    >
-      <App />
-    </ClerkProvider>
+    <ThemeProvider>
+      <ClerkThemeWrapper>
+        <App />
+      </ClerkThemeWrapper>
+    </ThemeProvider>
   </StrictMode>
 );

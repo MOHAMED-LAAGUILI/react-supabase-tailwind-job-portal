@@ -2,7 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Country, State } from "country-state-city";
 import { Building2, ChevronDown, MapPin, Search, Send } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import { BarLoader } from "react-spinners";
 import { z } from "zod";
 import { getCompanies } from "../api/apiCompanies";
 import { addNewJob } from "../api/apiJobs";
-import AddCompanyDrawer from "../components/add-company-drawer";
+import AddCompanyModal from "../components/add-company-modal";
 import { Button } from "../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
@@ -66,7 +66,7 @@ const PostJob = () => {
       toast.success("Job posted successfully");
       navigate("/jobs");
     }
-  }, [loadingCreateJob]);
+  }, [loadingCreateJob, dataCreateJob, navigate]);
 
   const { loading: loadingCompanies, data: companies, fn: fnCompanies } = useFetch<Company[]>(getCompanies);
 
@@ -77,8 +77,8 @@ const PostJob = () => {
 
   const [selectedCountry, setSelectedCountry] = useState("");
 
-  const countries = useMemo(() => Country.getAllCountries().sort((a, b) => a.name.localeCompare(b.name)), []);
-  const regions = useMemo(() => (selectedCountry ? State.getStatesOfCountry(selectedCountry) : []), [selectedCountry]);
+  const countries = Country.getAllCountries().sort((a, b) => a.name.localeCompare(b.name));
+  const regions = selectedCountry ? State.getStatesOfCountry(selectedCountry) : [];
 
   if (!isLoaded || loadingCompanies) {
     return (
@@ -103,8 +103,14 @@ const PostJob = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="space-y-2">
-          <label className="text-sm font-medium">Job Title</label>
+          <label
+            className="text-sm font-medium"
+            htmlFor="job-title"
+          >
+            Job Title
+          </label>
           <Input
+            id="job-title"
             placeholder="e.g. Senior Frontend Developer"
             {...register("title")}
           />
@@ -112,9 +118,15 @@ const PostJob = () => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Job Description</label>
+          <label
+            className="text-sm font-medium"
+            htmlFor="job-description"
+          >
+            Job Description
+          </label>
           <Textarea
             className="min-h-28"
+            id="job-description"
             placeholder="Describe the role, responsibilities, and ideal candidate..."
             {...register("description")}
           />
@@ -131,7 +143,12 @@ const PostJob = () => {
           </div>
 
           <div className="w-full sm:min-w-0 flex-1 space-y-2">
-            <label className="text-sm font-medium">Region</label>
+            <label
+              className="text-sm font-medium"
+              htmlFor="job-region"
+            >
+              Region
+            </label>
             <Controller
               control={control}
               name="location"
@@ -141,7 +158,7 @@ const PostJob = () => {
                   onValueChange={field.onChange}
                   value={field.value}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="job-region">
                     <MapPin
                       className="text-muted-foreground shrink-0"
                       size={15}
@@ -167,7 +184,12 @@ const PostJob = () => {
           </div>
 
           <div className="w-full sm:min-w-0 flex-[1.5] space-y-2">
-            <label className="text-sm font-medium">Company</label>
+            <label
+              className="text-sm font-medium"
+              htmlFor="job-company"
+            >
+              Company
+            </label>
             <div className="flex gap-2">
               <div className="flex-1">
                 <Controller
@@ -180,7 +202,10 @@ const PostJob = () => {
                         onValueChange={field.onChange}
                         value={field.value}
                       >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger
+                          className="w-full"
+                          id="job-company"
+                        >
                           <Building2
                             className="text-muted-foreground shrink-0"
                             size={15}
@@ -210,16 +235,22 @@ const PostJob = () => {
                   }}
                 />
               </div>
-              <AddCompanyDrawer fetchCompanies={fnCompanies} />
+              <AddCompanyModal fetchCompanies={fnCompanies} />
             </div>
             {errors.company_id && <p className="text-xs text-destructive">{errors.company_id.message}</p>}
           </div>
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Requirements</label>
+          <label
+            className="text-sm font-medium"
+            htmlFor="job-requirements"
+          >
+            Requirements
+          </label>
           <Textarea
             className="min-h-32"
+            id="job-requirements"
             placeholder="List the requirements, qualifications, and any other relevant details..."
             {...register("requirements")}
           />
@@ -262,18 +293,21 @@ function CountryCombobox({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  const filtered = useMemo(
-    () => countries.filter(c => c.name.toLowerCase().includes(search.toLowerCase())),
-    [countries, search]
-  );
+  const filtered = countries.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
 
   const selected = selectedCountry ? countries.find(c => c.isoCode === selectedCountry) : null;
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium">Country</label>
+      <label
+        className="text-sm font-medium"
+        htmlFor="post-country"
+      >
+        Country
+      </label>
       <button
         className="flex h-8 w-full items-center justify-between rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors hover:bg-accent cursor-pointer"
+        id="post-country"
         onClick={() => setOpen(true)}
         type="button"
       >

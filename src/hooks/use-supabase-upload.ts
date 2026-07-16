@@ -1,7 +1,7 @@
 import { useSession } from "@clerk/clerk-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { type FileError, type FileRejection, useDropzone } from "react-dropzone";
-import { supabaseClient } from "../utils/supabase";
+import { supabaseClient } from "../supabase/client";
 
 interface FileWithPreview extends File {
   errors: readonly FileError[];
@@ -64,43 +64,70 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
 
   const { session } = useSession();
 
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const [files, setFilesState] = useState<FileWithPreview[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<{ name: string; message: string }[]>([]);
   const [successes, setSuccesses] = useState<string[]>([]);
 
-  const isSuccess = useMemo(() => {
-    if (errors.length === 0 && successes.length === 0) {
-      return false;
-    }
-    if (errors.length === 0 && successes.length === files.length) {
-      return true;
-    }
-    return false;
-  }, [errors.length, successes.length, files.length]);
-
-  const onDrop = useCallback(
-    (acceptedFiles: File[], fileRejections: FileRejection[]) => {
-      const validFiles = acceptedFiles
-        .filter(file => !files.find(x => x.name === file.name))
-        .map(file => {
-          (file as FileWithPreview).preview = URL.createObjectURL(file);
-          (file as FileWithPreview).errors = [];
-          return file as FileWithPreview;
-        });
-
-      const invalidFiles = fileRejections.map(({ file, errors }) => {
-        (file as FileWithPreview).preview = URL.createObjectURL(file);
-        (file as FileWithPreview).errors = errors;
-        return file as FileWithPreview;
+  const setFiles = (arg: FileWithPreview[] | ((prev: FileWithPreview[]) => FileWithPreview[])) => {
+    if (typeof arg === "function") {
+      setFilesState(prev => {
+        const next = arg(prev);
+        if (next.length <= maxFiles) {
+          const needsCleanup = next.some(f => f.errors.some(e => e.code === "too-many-files"));
+          if (needsCleanup) {
+            return next.map(f => ({
+              ...f,
+              errors: f.errors.filter(e => e.code !== "too-many-files"),
+            }));
+          }
+        }
+        return next;
       });
+    } else {
+      if (arg.length === 0) {
+        setErrors([]);
+      }
+      if (arg.length <= maxFiles) {
+        const needsCleanup = arg.some(f => f.errors.some(e => e.code === "too-many-files"));
+        if (needsCleanup) {
+          setFilesState(
+            arg.map(f => ({
+              ...f,
+              errors: f.errors.filter(e => e.code !== "too-many-files"),
+            }))
+          );
+          return;
+        }
+      }
+      setFilesState(arg);
+    }
+  };
 
-      const newFiles = [...files, ...validFiles, ...invalidFiles];
+  const isSuccess =
+    errors.length === 0 && successes.length === 0 ? false : errors.length === 0 && successes.length === files.length;
 
-      setFiles(newFiles);
-    },
-    [files, setFiles]
-  );
+  const onDrop = (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+    const existingNames = new Set(files.map(x => x.name));
+    const validFiles = acceptedFiles.reduce<FileWithPreview[]>((acc, file) => {
+      if (!existingNames.has(file.name)) {
+        (file as FileWithPreview).preview = URL.createObjectURL(file);
+        (file as FileWithPreview).errors = [];
+        acc.push(file as FileWithPreview);
+      }
+      return acc;
+    }, []);
+
+    const invalidFiles = fileRejections.map(({ file, errors }) => {
+      (file as FileWithPreview).preview = URL.createObjectURL(file);
+      (file as FileWithPreview).errors = errors;
+      return file as FileWithPreview;
+    });
+
+    const newFiles = [...files, ...validFiles, ...invalidFiles];
+
+    setFiles(newFiles);
+  };
 
   const dropzoneProps = useDropzone({
     accept: allowedMimeTypes.reduce((acc, type) => ({ ...acc, [type]: [] }), {}),
@@ -111,15 +138,16 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     onDrop,
   });
 
-  const onUpload = useCallback(async () => {
+  const onUpload = async () => {
     setLoading(true);
 
     // [Joshen] This is to support handling partial successes
     // If any files didn't upload for any reason, hitting "Upload" again will only upload the files that had errors
-    const filesWithErrors = errors.map(x => x.name);
+    const errorFileNames = new Set(errors.map(x => x.name));
+    const successFileNames = new Set(successes);
     const filesToUpload =
-      filesWithErrors.length > 0
-        ? [...files.filter(f => filesWithErrors.includes(f.name)), ...files.filter(f => !successes.includes(f.name))]
+      errorFileNames.size > 0
+        ? [...files.filter(f => errorFileNames.has(f.name)), ...files.filter(f => !successFileNames.has(f.name))]
         : files;
 
     const supabaseAccessToken = await session?.getToken({ template: "supabase" });
@@ -150,28 +178,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     setSuccesses(newSuccesses);
 
     setLoading(false);
-  }, [files, path, bucketName, errors, successes, session, cacheControl, upsert]);
-
-  useEffect(() => {
-    if (files.length === 0) {
-      setErrors([]);
-    }
-
-    // If the number of files doesn't exceed the maxFiles parameter, remove the error 'Too many files' from each file
-    if (files.length <= maxFiles) {
-      let changed = false;
-      const newFiles = files.map(file => {
-        if (file.errors.some(e => e.code === "too-many-files")) {
-          file.errors = file.errors.filter(e => e.code !== "too-many-files");
-          changed = true;
-        }
-        return file;
-      });
-      if (changed) {
-        setFiles(newFiles);
-      }
-    }
-  }, [files.length, setFiles, maxFiles]);
+  };
 
   return {
     allowedMimeTypes,

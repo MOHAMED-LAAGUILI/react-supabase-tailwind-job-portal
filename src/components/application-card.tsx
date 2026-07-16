@@ -1,9 +1,10 @@
-import { Boxes, BriefcaseBusiness, Download, MapPin, School } from "lucide-react";
+import { BriefcaseBusiness, Calendar, Download, ExternalLink, MapPin, School } from "lucide-react";
+import { Link } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 import { updateApplicationStatus } from "../api/apiApplication";
 import useFetch from "../hooks/useFetch";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface ApplicationCardProps {
@@ -26,6 +27,25 @@ interface ApplicationCardProps {
   isCandidate?: boolean;
 }
 
+const statusMeta: Record<string, { label: string; className: string }> = {
+  applied: {
+    className: "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950",
+    label: "Applied",
+  },
+  hired: {
+    className: "text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-950",
+    label: "Hired",
+  },
+  interviewing: {
+    className: "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950",
+    label: "Interviewing",
+  },
+  rejected: {
+    className: "text-destructive bg-destructive/10",
+    label: "Rejected",
+  },
+};
+
 const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardProps) => {
   const handleDownload = () => {
     const link = document.createElement("a");
@@ -42,88 +62,146 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
     fnHiringStatus(status).then(() => fnHiringStatus());
   };
 
-  const statusColors: Record<string, string> = {
-    applied: "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950",
-    hired: "text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-950",
-    interviewing: "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950",
-    rejected: "text-destructive bg-destructive/10",
+  const status = statusMeta[application.status] || {
+    className: "bg-muted text-muted-foreground",
+    label: application.status,
   };
 
+  const companyLogo = application?.job?.company?.logo_url;
+
   return (
-    <Card className="relative overflow-hidden">
+    <Card className="relative overflow-hidden group hover:ring-2 hover:ring-primary/20 transition-all duration-300 h-full">
       {loadingHiringStatus && (
         <BarLoader
+          className="absolute top-0 left-0 w-full"
           color="#36d7b7"
           width={"100%"}
         />
       )}
-      <CardHeader>
-        <CardTitle className="flex justify-between items-start gap-4">
-          <div className="space-y-1">
-            <span className="text-base font-semibold leading-tight">
-              {isCandidate ? `${application?.job?.title}` : application?.name}
-            </span>
-            {isCandidate && (
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground font-normal">
-                <span>{application?.job?.company?.name}</span>
-                <span className="text-muted-foreground/40">|</span>
-                <span className="flex items-center gap-1">
-                  <MapPin size={12} />
-                  {application?.job?.location}
-                </span>
+      <CardHeader className="pb-0">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            {companyLogo && (
+              <div className="h-12 w-12 shrink-0 rounded-xl bg-muted/50 ring-1 ring-foreground/5 flex items-center justify-center overflow-hidden">
+                <img
+                  alt={application.job!.company!.name}
+                  className="h-8 w-8 object-contain"
+                  src={companyLogo}
+                />
               </div>
             )}
+            <div className="min-w-0">
+              <span className="text-base font-semibold leading-tight block truncate">
+                {isCandidate ? application?.job?.title : application?.name}
+              </span>
+              {application?.job?.company?.name && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                  <span className="truncate">{application.job.company.name}</span>
+                  {application?.job?.location && (
+                    <>
+                      <span className="text-muted-foreground/30">·</span>
+                      <span className="flex items-center gap-1 shrink-0">
+                        <MapPin size={10} />
+                        {application.job.location}
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+              {!isCandidate && (
+                <span className="text-xs text-muted-foreground/70 mt-0.5">{application?.experience} years exp.</span>
+              )}
+            </div>
           </div>
-          <Button
-            className="shrink-0 h-8 w-8 text-muted-foreground hover:text-foreground"
-            onClick={handleDownload}
-            size="icon"
-            variant="ghost"
-          >
-            <Download size={16} />
-          </Button>
-        </CardTitle>
+          <div className="flex items-center gap-2 shrink-0">
+            {isCandidate && (
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-medium capitalize tracking-wide ${status.className}`}
+              >
+                {status.label}
+              </span>
+            )}
+            <Button
+              className="shrink-0 h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
+              onClick={handleDownload}
+              size="icon"
+              variant="ghost"
+              title="Download resume"
+            >
+              <Download size={15} />
+            </Button>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
-        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
+      <CardContent className="pb-1">
+        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
+          {isCandidate && application?.experience && (
+            <span className="flex items-center gap-1.5">
+              <BriefcaseBusiness
+                size={14}
+                className="shrink-0"
+              />
+              {application.experience} years exp.
+            </span>
+          )}
           <span className="flex items-center gap-1.5">
-            <BriefcaseBusiness size={14} />
-            {application?.experience} years exp.
-          </span>
-          <span className="flex items-center gap-1.5">
-            <School size={14} />
+            <School
+              size={14}
+              className="shrink-0"
+            />
             {application?.education}
           </span>
-          <span className="flex items-center gap-1.5">
-            <Boxes size={14} />
-            {application?.skills}
-          </span>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-1">
+          {application?.skills?.split(",").map((skill, i) => (
+            <span
+              className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+              key={i}
+            >
+              {skill.trim()}
+            </span>
+          ))}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between items-center border-t pt-4">
-        <span className="text-xs text-muted-foreground">{new Date(application?.created_at).toLocaleDateString()}</span>
-        {isCandidate ? (
-          <span
-            className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusColors[application.status] || "bg-muted text-muted-foreground"}`}
-          >
-            {application.status}
-          </span>
-        ) : (
-          <Select
-            defaultValue={application.status}
-            onValueChange={value => handleStatusChange(value ?? "")}
-          >
-            <SelectTrigger className="w-40 h-8 text-xs">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="applied">Applied</SelectItem>
-              <SelectItem value="interviewing">Interviewing</SelectItem>
-              <SelectItem value="hired">Hired</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-            </SelectContent>
-          </Select>
-        )}
+      <CardFooter className="flex items-center justify-between py-2 gap-2">
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground/70 shrink-0">
+          <Calendar size={11} />
+          {new Date(application?.created_at).toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
+        </span>
+        <div className="flex items-center gap-2">
+          {!isCandidate && (
+            <Select
+              defaultValue={application.status}
+              onValueChange={value => handleStatusChange(value ?? "")}
+            >
+              <SelectTrigger className="w-36 h-8 text-xs">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="applied">Applied</SelectItem>
+                <SelectItem value="interviewing">Interviewing</SelectItem>
+                <SelectItem value="hired">Hired</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+          {isCandidate && application?.job_id && (
+            <Link to={`/job/${application.job_id}`}>
+              <Button
+                className="text-xs gap-1.5"
+                size="sm"
+                variant="outline"
+              >
+                View Job
+                <ExternalLink size={12} />
+              </Button>
+            </Link>
+          )}
+        </div>
       </CardFooter>
     </Card>
   );

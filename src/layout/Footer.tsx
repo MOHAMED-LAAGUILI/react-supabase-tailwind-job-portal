@@ -1,5 +1,3 @@
-"use client";
-
 import { AppleIcon } from "../components/apple-icon";
 import { FacebookIcon } from "../components/facebook-icon";
 import { GooglePlayIcon } from "../components/google-play-icon";
@@ -42,11 +40,16 @@ export function Footer() {
             <p className="mt-8 text-muted-foreground text-sm md:mt-0">Your Job Portal</p>
           </div>
           <div className="flex items-center gap-2">
-            {socialLinks.map(({ icon, href }, index) => (
+            {socialLinks.map(({ icon, href, name }) => (
               <Button
-                key={`social-${href}-${index}`}
+                key={name}
                 nativeButton={false}
-                render={<a href={href} />}
+                render={
+                  <a
+                    aria-label={name}
+                    href={href}
+                  />
+                }
                 size="icon"
                 variant="outline"
               >
@@ -59,7 +62,12 @@ export function Footer() {
             <Button
               className="h-11"
               nativeButton={false}
-              render={<a href="#" />}
+              render={
+                <a
+                  aria-label="Get it on Google Play"
+                  href="#"
+                />
+              }
             >
               <GooglePlayIcon className="size-5" />
               <div className="flex flex-col items-start justify-center pr-2 text-left">
@@ -71,7 +79,12 @@ export function Footer() {
             <Button
               className="h-11"
               nativeButton={false}
-              render={<a href="#" />}
+              render={
+                <a
+                  aria-label="Download on the App Store"
+                  href="#"
+                />
+              }
             >
               <AppleIcon className="size-5" />
               <div className="flex flex-col items-start justify-center pr-2 text-left">
@@ -144,17 +157,21 @@ const socialLinks = [
   {
     href: "#",
     icon: <FacebookIcon />,
+    name: "Facebook",
   },
   {
     href: "#",
     icon: <InstagramIcon />,
+    name: "Instagram",
   },
   {
     href: "#",
     icon: <LinkedinIcon />,
+    name: "LinkedIn",
   },
   {
     href: "#",
     icon: <XIcon />,
+    name: "X",
   },
 ];

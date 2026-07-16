@@ -1,6 +1,6 @@
-import { SignedIn, SignedOut, SignIn, UserButton, useUser } from "@clerk/clerk-react";
-import { BriefcaseBusiness, Heart, LogIn, PenBox } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { SignedIn, SignedOut, SignIn, UserButton, useAuth, useUser } from "@clerk/clerk-react";
+import { BriefcaseBusiness, Heart, LogIn, PenBox, User } from "lucide-react";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { Link, useSearchParams } from "react-router-dom";
 import { Logo } from "../components/logo";
@@ -8,10 +8,15 @@ import { AnimatedThemeToggler } from "../components/ui/animated-theme-toggler";
 import { Button } from "../components/ui/button";
 
 const Header = () => {
-  const [showSignIn, setShowSignIn] = useState(false);
-
   const [search, setSearch] = useSearchParams();
+  const showSignIn = search.has("sign-in");
   const { user } = useUser();
+  const { userId, has, isLoaded } = useAuth();
+
+  const hasPremiumAccess = has?.({ plan: "pro" }) ?? false;
+  const hasEnterpriseAccess = has?.({ plan: "entreprise" }) ?? false;
+  const activePlan = hasEnterpriseAccess ? "Enterprise" : hasPremiumAccess ? "Pro" : "Free";
+
   const prevUserRef = useRef(user);
 
   useEffect(() => {
@@ -28,15 +33,8 @@ const Header = () => {
     prevUserRef.current = user;
   }, [user]);
 
-  useEffect(() => {
-    if (search.get("sign-in")) {
-      setShowSignIn(true);
-    }
-  }, [search]);
-
   const handleOverlayClick = (e: any) => {
     if (e.target === e.currentTarget) {
-      setShowSignIn(false);
       setSearch({});
     }
   };
@@ -51,7 +49,7 @@ const Header = () => {
             <SignedOut>
               <Button
                 className="gap-2"
-                onClick={() => setShowSignIn(true)}
+                onClick={() => setSearch({ "sign-in": "true" })}
                 variant="outline"
               >
                 <LogIn size={16} />
@@ -62,8 +60,8 @@ const Header = () => {
               {user?.unsafeMetadata?.role === "recruiter" && (
                 <Link to="/post-job">
                   <Button
-                    className="rounded-full"
-                    variant="destructive"
+                    className="rounded-md"
+                    variant="outline"
                   >
                     <PenBox
                       className="mr-2"
@@ -75,6 +73,7 @@ const Header = () => {
               )}
             </SignedIn>
             <AnimatedThemeToggler />
+
             <SignedIn>
               <UserButton
                 appearance={{
@@ -84,6 +83,11 @@ const Header = () => {
                 }}
               >
                 <UserButton.MenuItems>
+                  <UserButton.Link
+                    href="#"
+                    label={`ID: ${userId}`}
+                    labelIcon={<User size={15} />}
+                  />
                   <UserButton.Link
                     href="/my-jobs"
                     label="My Jobs"
@@ -97,6 +101,11 @@ const Header = () => {
                   <UserButton.Action label="manageAccount" />
                 </UserButton.MenuItems>
               </UserButton>
+              {isLoaded && (
+                <span className="hidden sm:inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
+                  {activePlan}
+                </span>
+              )}
             </SignedIn>
           </div>
         </nav>
@@ -106,6 +115,12 @@ const Header = () => {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
           onClick={handleOverlayClick}
+          onKeyDown={e => {
+            if (e.key === "Escape") {
+              setSearch({});
+            }
+          }}
+          role="presentation"
         >
           <div className="w-full max-w-md mx-4">
             <SignIn

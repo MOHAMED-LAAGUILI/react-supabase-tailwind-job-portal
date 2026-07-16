@@ -1,20 +1,20 @@
-import { supabaseClient, supabaseUrl } from "../utils/supabase";
+import { supabaseClient, supabaseUrl } from "../supabase/client";
+import { BUCKETS, TABLES } from "./constants";
 
-// - Apply to job ( candidate )
 export async function applyToJob(token: string, _: unknown, jobData: Record<string, unknown>) {
   const supabase = await supabaseClient(token);
 
   const random = Math.floor(Math.random() * 90000);
   const fileName = `resume-${random}-${jobData.user_id}`;
 
-  const { error: storageError } = await supabase.storage.from("resumes").upload(fileName, jobData.resume);
+  const { error: storageError } = await supabase.storage.from(BUCKETS.resumes).upload(fileName, jobData.resume);
 
   if (storageError) throw new Error("Error uploading Resume");
 
-  const resume = `${supabaseUrl}/storage/v1/object/public/resumes/${fileName}`;
+  const resume = `${supabaseUrl}/storage/v1/object/public/${BUCKETS.resumes}/${fileName}`;
 
   const { data, error } = await supabase
-    .from("applications")
+    .from(TABLES.applications)
     .insert([
       {
         ...jobData,
@@ -31,10 +31,9 @@ export async function applyToJob(token: string, _: unknown, jobData: Record<stri
   return data;
 }
 
-// - Edit Application Status ( recruiter )
 export async function updateApplicationStatus(token: string, { job_id }: { job_id: unknown }, status: unknown) {
   const supabase = await supabaseClient(token);
-  const { data, error } = await supabase.from("applications").update({ status }).eq("job_id", job_id).select();
+  const { data, error } = await supabase.from(TABLES.applications).update({ status }).eq("job_id", job_id).select();
 
   if (error || data.length === 0) {
     console.error("Error Updating Application Status:", error);
@@ -47,8 +46,8 @@ export async function updateApplicationStatus(token: string, { job_id }: { job_i
 export async function getApplications(token: string, { user_id }: { user_id: unknown }) {
   const supabase = await supabaseClient(token);
   const { data, error } = await supabase
-    .from("applications")
-    .select("*, job:jobs(title, company:companies(name))")
+    .from(TABLES.applications)
+    .select(`*, job:${TABLES.jobs}(title, company:${TABLES.companies}(name))`)
     .eq("user_id", user_id);
 
   if (error) {

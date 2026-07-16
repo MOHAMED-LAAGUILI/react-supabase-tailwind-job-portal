@@ -9,19 +9,19 @@ import ApplicationCard from "./application-card";
 const CreatedApplications = () => {
   const { user } = useUser();
 
-  if (!user) return null;
-
   const {
     loading: loadingApplications,
     data: applications,
     fn: fnApplications,
   } = useFetch(getApplications, {
-    user_id: user.id,
+    user_id: user?.id ?? "",
   });
 
   useEffect(() => {
     fnApplications();
-  }, []);
+  }, [fnApplications]);
+
+  if (!user) return null;
 
   if (loadingApplications) {
     return (
@@ -46,13 +46,17 @@ const CreatedApplications = () => {
           ))}
         </div>
       ) : (
-        <div className="mt-20 flex flex-col items-center gap-3 text-muted-foreground">
-          <Send
-            size={40}
-            strokeWidth={1}
-          />
-          <p className="text-lg font-medium">No applications yet</p>
-          <p className="text-sm">Applications you submit will show up here</p>
+        <div className="mt-20 flex flex-col items-center gap-4 text-muted-foreground">
+          <div className="rounded-full bg-muted/50 p-4 ring-1 ring-foreground/5">
+            <Send
+              size={36}
+              strokeWidth={1.2}
+            />
+          </div>
+          <div className="text-center">
+            <p className="text-lg font-semibold tracking-tight">No applications yet</p>
+            <p className="text-sm text-muted-foreground/70 mt-1">Applications you submit will show up here</p>
+          </div>
         </div>
       )}
     </>

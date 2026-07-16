@@ -1,30 +1,19 @@
-import { useSession, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 import CardFlip from "../components/kokonutui/card-flip";
 import { AnimatedContainer } from "../layout/animated-container";
-import { supabaseClient } from "../utils/supabase";
 
 const Onboarding = () => {
   const { user, isLoaded } = useUser();
-  const { session } = useSession();
   const navigate = useNavigate();
-
-  const navigateUser = (currRole: string) => {
-    navigate(currRole === "recruiter" ? "/post-job" : "/jobs");
-  };
 
   const handleRoleSelection = async (role: string) => {
     if (!user) return;
     try {
       await user.update({ unsafeMetadata: { role } });
-      const supabaseAccessToken = await session?.getToken({ template: "supabase" });
-      if (supabaseAccessToken) {
-        const supabase = supabaseClient(supabaseAccessToken);
-        await supabase.from("profiles").insert({ id: user.id, role });
-      }
-      navigateUser(role);
+      navigate(role === "recruiter" ? "/post-job" : "/jobs");
     } catch (err) {
       console.error("Error during onboarding:", err);
     }
@@ -32,9 +21,9 @@ const Onboarding = () => {
 
   useEffect(() => {
     if (user?.unsafeMetadata?.role) {
-      navigateUser(user.unsafeMetadata.role as string);
+      navigate(user.unsafeMetadata.role === "recruiter" ? "/post-job" : "/jobs");
     }
-  }, [user]);
+  }, [user, navigate]);
 
   if (!isLoaded) {
     return (

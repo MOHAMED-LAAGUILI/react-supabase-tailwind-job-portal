@@ -1,16 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Upload, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { BarLoader } from "react-spinners";
 import { z } from "zod";
 import { addNewCompany } from "../api/apiCompanies";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { BUCKETS } from "../api/constants";
 import { useSupabaseUpload } from "../hooks/use-supabase-upload";
 import useFetch from "../hooks/useFetch";
 import { Dropzone, DropzoneEmptyState } from "./dropzone";
 import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
 
 const schema = z.object({
@@ -19,12 +20,12 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) => {
+const AddCompanyModal = ({ fetchCompanies }: { fetchCompanies: () => void }) => {
   const [open, setOpen] = useState(false);
 
   const upload = useSupabaseUpload({
     allowedMimeTypes: ["image/png", "image/jpeg"],
-    bucketName: "company-logo",
+    bucketName: BUCKETS.companyLogo,
     maxFiles: 1,
   });
 
@@ -40,24 +41,20 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
   const {
     loading: loadingAddCompany,
     error: errorAddCompany,
-    data: dataAddCompany,
     fn: fnAddCompany,
   } = useFetch(addNewCompany as any, { method: "POST" });
 
   const onSubmit = async (data: FormData) => {
     if (upload.files.length === 0) return;
-    fnAddCompany({ ...data, logo: upload.files[0] });
-  };
-
-  useEffect(() => {
-    if (Array.isArray(dataAddCompany) && dataAddCompany.length > 0) {
+    const result = await fnAddCompany({ ...data, logo: upload.files[0] });
+    if (result) {
       toast.success("Company created successfully");
       fetchCompanies();
       reset();
       upload.setFiles([]);
       setOpen(false);
     }
-  }, [loadingAddCompany]);
+  };
 
   return (
     <Dialog
@@ -74,8 +71,14 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
 
         <form className="flex flex-col gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Company Name</label>
+            <label
+              className="text-sm font-medium"
+              htmlFor="company-name"
+            >
+              Company Name
+            </label>
             <Input
+              id="company-name"
               placeholder="e.g. Acme Corp"
               {...register("name")}
             />
@@ -83,34 +86,41 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Company Logo</label>
-            <Dropzone
-              className="w-full"
-              {...upload}
+            <label
+              className="text-sm font-medium"
+              htmlFor="company-logo-input"
             >
-              <DropzoneEmptyState />
-              {upload.files.length > 0 && (
-                <div className="mt-3 flex items-center justify-center">
-                  <div className="relative inline-flex">
-                    <img
-                      alt="Logo preview"
-                      className="h-20 w-20 rounded-lg border object-cover"
-                      src={upload.files[0].preview}
-                    />
-                    <button
-                      className="absolute -top-2 -right-2 rounded-full bg-background border p-0.5 text-muted-foreground hover:text-foreground cursor-pointer"
-                      onClick={e => {
-                        e.stopPropagation();
-                        upload.setFiles([]);
-                      }}
-                      type="button"
-                    >
-                      <X size={14} />
-                    </button>
+              Company Logo
+              <Dropzone
+                className="w-full"
+                inputId="company-logo-input"
+                {...upload}
+              >
+                <DropzoneEmptyState />
+                {upload.files.length > 0 && (
+                  <div className="mt-3 flex items-center justify-center">
+                    <div className="relative inline-flex">
+                      <img
+                        alt="Logo preview"
+                        className="h-20 w-20 rounded-lg border object-cover"
+                        src={upload.files[0].preview}
+                      />
+                      <button
+                        aria-label="Remove logo"
+                        className="absolute -top-2 -right-2 rounded-full bg-background border p-0.5 text-muted-foreground hover:text-foreground cursor-pointer"
+                        onClick={e => {
+                          e.stopPropagation();
+                          upload.setFiles([]);
+                        }}
+                        type="button"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </Dropzone>
+                )}
+              </Dropzone>
+            </label>
           </div>
 
           {(errorAddCompany as { message?: string } | null)?.message && (
@@ -150,4 +160,4 @@ const AddCompanyDrawer = ({ fetchCompanies }: { fetchCompanies: () => void }) =>
   );
 };
 
-export default AddCompanyDrawer;
+export default AddCompanyModal;

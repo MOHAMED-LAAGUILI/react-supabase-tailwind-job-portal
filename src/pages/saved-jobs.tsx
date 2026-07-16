@@ -15,7 +15,7 @@ const SavedJobs = () => {
     if (isLoaded) {
       fnSavedJobs();
     }
-  }, [isLoaded]);
+  }, [isLoaded, fnSavedJobs]);
 
   if (!isLoaded) {
     return (

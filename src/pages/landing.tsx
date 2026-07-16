@@ -1,4 +1,5 @@
-import { useUser } from "@clerk/clerk-react";
+import { PricingTable, useUser } from "@clerk/clerk-react";
+import { dark } from "@clerk/themes";
 import { BriefcaseBusiness, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { InfiniteSlider } from "../components/infinite-slider";
@@ -12,15 +13,18 @@ import { faqs } from "../data/faqs";
 import { logos } from "../data/logos";
 import { TESTIMONIALS_1, TESTIMONIALS_2 } from "../data/testimonials";
 import { AnimatedContainer } from "../layout/animated-container";
+import { useTheme } from "../layout/theme-provider";
 
 const LandingPage = () => {
   const { isSignedIn } = useUser();
+  const { theme } = useTheme();
   const navigate = useNavigate();
+  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
   return (
     <AnimatedContainer className="flex flex-col gap-10 sm:gap-20 py-10 sm:py-20">
       <section className="text-center relative">
         <div className="absolute inset-0 flex justify-center pointer-events-none">
-          <div className="w-[400px] h-[400px] rounded-full bg-gradient-to-br from-primary/20 via-primary/10 to-transparent blur-3xl" />
+          <div className="w-100 h-100 rounded-full bg-linear-to-br from-primary/20 via-primary/10 to-transparent blur-3xl" />
         </div>
         <h1 className="relative flex flex-col items-center justify-center gradient-title font-extrabold text-4xl sm:text-6xl lg:text-8xl tracking-tighter py-4">
           Find Your Dream Job
@@ -119,6 +123,48 @@ const LandingPage = () => {
         />
       </section>
 
+      <div className="">
+        <div className="absolute inset-0 flex justify-center pointer-events-none">
+          <div className="w-125 h-125 rounded-full bg-linear-to-br from-primary/10 via-primary/5 to-transparent blur-3xl" />
+        </div>
+
+        <div className="relative mb-12 text-center">
+          <h2 className="gradient-title font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight pb-2">
+            Simple, transparent pricing
+          </h2>
+          <p className="mt-3 text-muted-foreground text-sm sm:text-base">
+            Choose the plan that fits your needs. No hidden fees.
+          </p>
+        </div>
+
+        <PricingTable
+          for="user"
+          collapseFeatures={false}
+          newSubscriptionRedirectUrl="/"
+          fallback={<div className="flex items-center justify-center py-10">Loading pricing...</div>}
+          appearance={{
+            baseTheme: isDark ? dark : undefined,
+            variables: {
+              borderRadius: "0.3rem",
+              colorPrimary: "var(--primary)",
+            },
+          }}
+          checkoutProps={{
+            appearance: {
+              baseTheme: isDark ? dark : undefined,
+              elements: {
+                drawerRoot: {
+                  zIndex: 9999,
+                },
+              },
+              variables: {
+                borderRadius: "0.4rem",
+                colorPrimary: "var(--primary)",
+              },
+            },
+          }}
+        />
+      </div>
       <div className="w-full py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">

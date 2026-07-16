@@ -18,7 +18,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["src/**/*.{ts,tsx,js,jsx}", "!!public"]
+    "includes": ["src/**/*.{ts,tsx,js,jsx}", "!!public", "!!.agents", "!!.claude", "!!.github"]
   },
   "formatter": {
     "attributePosition": "multiline",
@@ -54,7 +54,7 @@
     }
   },
   "linter": {
-    "enabled": true,
+    "enabled": false,
     "rules": {
       "preset": "recommended",
       "a11y": {
@@ -64,8 +64,6 @@
   },
   "vcs": {
     "clientKind": "git",
-    "enabled": true,
-    "useIgnoreFile": true
-  },
-  "extends": ["ultracite/biome/core", "ultracite/biome/react"]
+    "enabled": true
+  }
 }

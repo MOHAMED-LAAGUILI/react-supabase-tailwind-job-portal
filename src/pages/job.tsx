@@ -25,7 +25,7 @@ const JobPage = () => {
 
   useEffect(() => {
     if (isLoaded) fnJob();
-  }, [isLoaded]);
+  }, [isLoaded, fnJob]);
 
   const { loading: loadingHiringStatus, fn: fnHiringStatus } = useFetch(updateHiringStatus as any, {
     job_id: id,

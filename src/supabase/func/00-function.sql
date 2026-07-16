@@ -1,3 +1,7 @@
+
+/*
+/database/functions add this
+*/
 SELECT NULLIF(
     current_setting('request.jwt.claims', true)::json->>'sub',
     ''

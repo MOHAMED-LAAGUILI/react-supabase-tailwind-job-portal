@@ -1,8 +1,8 @@
+import { domAnimation, LazyMotion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AppLayout from "./layout/app-layout";
 import ProtectedRoute from "./layout/protected-route";
-import { ThemeProvider } from "./layout/theme-provider";
 import JobPage from "./pages/job";
 import JobListing from "./pages/jobListing";
 import LandingPage from "./pages/landing";
@@ -73,18 +73,13 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <ThemeProvider
-      defaultTheme="dark"
-      storageKey="vite-ui-theme"
-    >
+    <LazyMotion features={domAnimation}>
       <RouterProvider router={router} />
       <Toaster
         position="bottom-right"
-        toastOptions={{
-        
-        }}
+        toastOptions={{}}
       />
-    </ThemeProvider>
+    </LazyMotion>
   );
 }
 

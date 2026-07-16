@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { Country, State } from "country-state-city";
 import { Building2, ChevronDown, MapPin, Search, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { BarLoader } from "react-spinners";
 import { getCompanies } from "../api/apiCompanies";
 import { getJobs } from "../api/apiJobs";
@@ -21,8 +21,8 @@ const JobListing = () => {
 
   const { isLoaded } = useUser();
 
-  const countries = useMemo(() => Country.getAllCountries().sort((a, b) => a.name.localeCompare(b.name)), []);
-  const regions = useMemo(() => (selectedCountry ? State.getStatesOfCountry(selectedCountry) : []), [selectedCountry]);
+  const countries = Country.getAllCountries().sort((a, b) => a.name.localeCompare(b.name));
+  const regions = selectedCountry ? State.getStatesOfCountry(selectedCountry) : [];
 
   const { data: companies, fn: fnCompanies } = useFetch<Company[]>(getCompanies);
 
@@ -251,18 +251,23 @@ function CountryCombobox({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  const filtered = useMemo(
-    () => countries.filter(c => c.name.toLowerCase().includes(search.toLowerCase())),
-    [countries, search]
-  );
+  const filtered = countries.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
 
   const selected = selectedCountry ? countries.find(c => c.isoCode === selectedCountry) : null;
 
   return (
     <div className="space-y-2">
-      {!hideLabel && <label className="text-sm font-medium">Country</label>}
+      {!hideLabel && (
+        <label
+          className="text-sm font-medium"
+          htmlFor="country-filter"
+        >
+          Country
+        </label>
+      )}
       <button
         className={`flex ${height} w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 text-sm transition-colors hover:bg-accent cursor-pointer`}
+        id="country-filter"
         onClick={() => setOpen(true)}
         type="button"
       >

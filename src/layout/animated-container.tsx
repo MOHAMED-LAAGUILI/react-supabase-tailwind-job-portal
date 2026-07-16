@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "motion/react";
+import { m, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
 export function AnimatedContainer({
@@ -17,7 +17,7 @@ export function AnimatedContainer({
   }
 
   return (
-    <motion.div
+    <m.div
       className={className}
       initial={{ filter: "blur(4px)", opacity: 0, translateY: -8 }}
       transition={{ delay, duration: 0.8 }}
@@ -25,6 +25,6 @@ export function AnimatedContainer({
       whileInView={{ filter: "blur(0px)", opacity: 1, translateY: 0 }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

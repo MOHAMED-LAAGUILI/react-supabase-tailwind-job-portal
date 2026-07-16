@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { BarLoader } from "react-spinners";
 import * as z from "zod";
 import { applyToJob } from "../api/apiApplication";
+import { BUCKETS } from "../api/constants";
 import { Button } from "../components/ui/button";
 import {
   Dialog,
@@ -18,10 +19,11 @@ import {
 } from "../components/ui/dialog";
 import { useSupabaseUpload } from "../hooks/use-supabase-upload";
 import useFetch from "../hooks/useFetch";
-import { Dropzone, DropzoneEmptyState, formatBytes } from "./dropzone";
+import { Dropzone, DropzoneEmptyState } from "./dropzone";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { formatBytes } from "../lib/format-bytes";
 
 const schema = z.object({
   education: z.enum(["Intermediate", "Graduate", "Post Graduate"], {
@@ -48,7 +50,7 @@ export function ApplyJobDialog({ user, job, fetchJob, applied = false }: ApplyJo
 
   const upload = useSupabaseUpload({
     allowedMimeTypes: ["application/pdf", "application/msword"],
-    bucketName: "resumes",
+    bucketName: BUCKETS.resumes,
     maxFiles: 1,
   });
 
@@ -167,34 +169,37 @@ export function ApplyJobDialog({ user, job, fetchJob, applied = false }: ApplyJo
           {errors.education && <p className="text-xs text-destructive">{errors.education.message as string}</p>}
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Resume</label>
-            <Dropzone
-              className="w-full"
-              {...upload}
-            >
-              <DropzoneEmptyState />
-              {upload.files.length > 0 && (
-                <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border bg-muted/30 px-3 py-2">
-                  <div className="flex items-center gap-2 truncate">
-                    <File
-                      className="shrink-0 text-muted-foreground"
-                      size={16}
-                    />
-                    <span className="text-sm truncate">{upload.files[0].name}</span>
-                    <span className="text-xs text-muted-foreground shrink-0">
-                      {formatBytes(upload.files[0].size, 1)}
-                    </span>
+            <label className="text-sm font-medium">
+              Resume
+              <Dropzone
+                className="w-full"
+                {...upload}
+              >
+                <DropzoneEmptyState />
+                {upload.files.length > 0 && (
+                  <div className="mt-3 flex items-center justify-between gap-3 rounded-lg border bg-muted/30 px-3 py-2">
+                    <div className="flex items-center gap-2 truncate">
+                      <File
+                        className="shrink-0 text-muted-foreground"
+                        size={16}
+                      />
+                      <span className="text-sm truncate">{upload.files[0].name}</span>
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        {formatBytes(upload.files[0].size, 1)}
+                      </span>
+                    </div>
+                    <button
+                      aria-label="Remove resume"
+                      className="shrink-0 text-muted-foreground hover:text-foreground cursor-pointer"
+                      onClick={() => upload.setFiles([])}
+                      type="button"
+                    >
+                      <X size={14} />
+                    </button>
                   </div>
-                  <button
-                    className="shrink-0 text-muted-foreground hover:text-foreground cursor-pointer"
-                    onClick={() => upload.setFiles([])}
-                    type="button"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              )}
-            </Dropzone>
+                )}
+              </Dropzone>
+            </label>
           </div>
 
           {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}

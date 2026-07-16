@@ -2,12 +2,13 @@
 ![alt text](image-1.png)
 
 
-
 # 🛠️ Supabase Infrastructure Setup
 
 Before running the application, complete the following setup in your **Supabase** and **Clerk** dashboards.
 
 ---
+## clerk docs
+https://clerk.com/docs/react/guides/
 ## link supabase with clerk
 https://clerk.com/docs/guides/development/integrations/databases/supabase
 ## 1. Execute the Database Migrations

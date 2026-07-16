@@ -9,19 +9,19 @@ import JobCard from "./job-card";
 const CreatedJobs = () => {
   const { user } = useUser();
 
-  if (!user) return null;
-
   const {
     loading: loadingCreatedJobs,
     data: createdJobs,
     fn: fnCreatedJobs,
   } = useFetch(getMyJobs, {
-    recruiter_id: user.id,
+    recruiter_id: user?.id ?? "",
   });
 
   useEffect(() => {
     fnCreatedJobs();
-  }, []);
+  }, [fnCreatedJobs]);
+
+  if (!user) return null;
 
   if (loadingCreatedJobs) {
     return (
@@ -47,13 +47,19 @@ const CreatedJobs = () => {
           ))}
         </div>
       ) : (
-        <div className="mt-20 flex flex-col items-center gap-3 text-muted-foreground">
-          <Briefcase
-            size={40}
-            strokeWidth={1}
-          />
-          <p className="text-lg font-medium">No jobs posted yet</p>
-          <p className="text-sm">Create your first job listing to start receiving applications</p>
+        <div className="mt-20 flex flex-col items-center gap-4 text-muted-foreground">
+          <div className="rounded-full bg-muted/50 p-4 ring-1 ring-foreground/5">
+            <Briefcase
+              size={36}
+              strokeWidth={1.2}
+            />
+          </div>
+          <div className="text-center">
+            <p className="text-lg font-semibold tracking-tight">No jobs posted yet</p>
+            <p className="text-sm text-muted-foreground/70 mt-1">
+              Create your first job listing to start receiving applications
+            </p>
+          </div>
         </div>
       )}
     </>
