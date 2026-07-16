@@ -1,8 +1,8 @@
 import { domAnimation, LazyMotion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import AppLayout from "./layout/app-layout";
-import ProtectedRoute from "./layout/protected-route";
+import AppLayout from "./layout";
+import ProtectedRoute from "./providers/protected-route";
 import JobPage from "./pages/job";
 import JobListing from "./pages/jobListing";
 import LandingPage from "./pages/landing";

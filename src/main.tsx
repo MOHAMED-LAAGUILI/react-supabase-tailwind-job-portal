@@ -3,8 +3,8 @@ import { createRoot } from "react-dom/client";
 
 import "./index.css";
 import App from "./App";
-import { ClerkThemeWrapper } from "./layout/clerk-theme-wrapper";
-import { ThemeProvider } from "./layout/theme-provider";
+import { ClerkThemeWrapper } from "./providers/clerk-theme-wrapper";
+import { ThemeProvider } from "./providers/theme-provider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

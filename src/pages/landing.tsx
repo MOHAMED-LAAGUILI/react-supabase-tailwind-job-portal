@@ -12,8 +12,8 @@ import { Button } from "../components/ui/button";
 import { faqs } from "../data/faqs";
 import { logos } from "../data/logos";
 import { TESTIMONIALS_1, TESTIMONIALS_2 } from "../data/testimonials";
-import { AnimatedContainer } from "../layout/animated-container";
-import { useTheme } from "../layout/theme-provider";
+import { AnimatedContainer } from "../providers/animated-container";
+import { useTheme } from "../providers/theme-provider";
 
 const LandingPage = () => {
   const { isSignedIn } = useUser();

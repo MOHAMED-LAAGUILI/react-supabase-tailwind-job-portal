@@ -156,7 +156,7 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
           {application?.skills?.split(",").map((skill, i) => (
             <span
               className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
-              key={i}
+              key={skill.trim()}
             >
               {skill.trim()}
             </span>

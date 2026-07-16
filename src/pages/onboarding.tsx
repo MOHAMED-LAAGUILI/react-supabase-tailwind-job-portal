@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 import CardFlip from "../components/kokonutui/card-flip";
-import { AnimatedContainer } from "../layout/animated-container";
+import { AnimatedContainer } from "../providers/animated-container";
 
 const Onboarding = () => {
   const { user, isLoaded } = useUser();

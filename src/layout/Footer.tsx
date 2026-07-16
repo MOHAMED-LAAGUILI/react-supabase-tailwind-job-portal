@@ -6,7 +6,7 @@ import { LinkedinIcon } from "../components/linkedin-icon";
 import { Logo } from "../components/logo";
 import { Button } from "../components/ui/button";
 import { XIcon } from "../components/x-icon";
-import { AnimatedContainer } from "./animated-container";
+import { AnimatedContainer } from "../providers/animated-container";
 
 export function Footer() {
   return (

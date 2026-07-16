@@ -1,7 +1,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { useTheme } from "../../layout/theme-provider";
+import { useTheme } from "../../providers/theme-provider";
 import { cn } from "../../lib/utils";
 
 export type TransitionVariant = "circle" | "square" | "triangle" | "diamond" | "hexagon" | "rectangle" | "star";

@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import { BookmarkCheck, Clock, Heart, MapPinIcon, Trash2Icon } from "lucide-react";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { BarLoader } from "react-spinners";
@@ -28,10 +28,6 @@ interface JobCardProps {
 const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = false }: JobCardProps) => {
   const [saved, setSaved] = useState(savedInit);
   const { user } = useUser();
-
-  useEffect(() => {
-    setSaved(savedInit);
-  }, [savedInit]);
 
   const { loading: loadingDeleteJob, fn: fnDeleteJob } = useFetch(deleteJob, {
     job_id: job.id,
@@ -111,6 +107,7 @@ const JobCard = ({ job, savedInit = false, onJobAction = () => {}, isMyJob = fal
             )}
             {isMyJob && (
               <button
+                aria-label="Delete job"
                 className="rounded-lg p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
                 onClick={handleDeleteJob}
                 type="button"

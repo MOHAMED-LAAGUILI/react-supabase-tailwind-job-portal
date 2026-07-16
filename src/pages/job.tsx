@@ -1,5 +1,4 @@
 import { useUser } from "@clerk/clerk-react";
-import MDEditor from "@uiw/react-md-editor";
 import { Briefcase, Building2, DoorClosed, DoorOpen, MapPinIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -10,6 +9,7 @@ import { ApplyJobDialog } from "../components/apply-job";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import useFetch from "../hooks/useFetch";
 import type { Job } from "../types";
+
 
 const JobPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,6 +48,14 @@ const JobPage = () => {
 
   const isRecruiter = job?.recruiter_id === user?.id;
   const hasApplied = job?.applications?.find(ap => ap.user_id === user?.id);
+
+
+
+const requirements =
+  job?.requirements
+    ?.split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean) ?? [];
 
   return (
     <div className="py-6 space-y-8">
@@ -141,11 +149,23 @@ const JobPage = () => {
         <p className="text-muted-foreground sm:text-base leading-relaxed">{job?.description}</p>
       </section>
 
-      {/* Requirements */}
-      <section>
-        <h2 className="text-xl sm:text-2xl font-bold mb-3">What we are looking for</h2>
-        <div className="text-muted-foreground">{job?.requirements}</div>
-      </section>
+    {/* Requirements */}
+<section>
+  <h2 className="mb-3 text-xl font-bold sm:text-2xl">
+    What we're looking for
+  </h2>
+
+  <ul className="">
+    {requirements.map((requirement) => (
+      <li
+        key={requirement}
+        className="flex gap-2 text-muted-foreground"
+      >
+        <span>{requirement}</span>
+      </li>
+    ))}
+  </ul>
+</section>
 
       {/* Apply or Applied button */}
       {!isRecruiter && (
