@@ -87,16 +87,3 @@ export function TestimonialAuthorTagline({ className, ...props }: ComponentProps
   );
 }
 
-function TestimonialVerifiedBadge({ className, ...props }: ComponentProps<"span">) {
-  return (
-    <span
-      aria-hidden
-      className={cn(
-        "flex [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
-        className
-      )}
-      data-slot="testimonial-verified-badge"
-      {...props}
-    />
-  );
-}

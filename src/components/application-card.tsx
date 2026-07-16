@@ -153,7 +153,7 @@ const ApplicationCard = ({ application, isCandidate = false }: ApplicationCardPr
           </span>
         </div>
         <div className="mt-2 flex flex-wrap gap-1">
-          {application?.skills?.split(",").map((skill, i) => (
+          {application?.skills?.split(",").map((skill) => (
             <span
               className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
               key={skill.trim()}
