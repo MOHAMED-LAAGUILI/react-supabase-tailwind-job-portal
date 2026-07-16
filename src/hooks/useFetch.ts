@@ -1,5 +1,5 @@
 import { useSession } from "@clerk/clerk-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const useFetch = <T, O = Record<string, unknown>>(
   cb: (token: string, options: O, ...args: unknown[]) => Promise<T | null>,
@@ -18,25 +18,28 @@ const useFetch = <T, O = Record<string, unknown>>(
     optionsRef.current = options;
   });
 
-  const fn = async (...args: unknown[]) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const supabaseAccessToken = await session?.getToken({
-        template: "supabase",
-      });
-      const response = await cbRef.current(supabaseAccessToken!, optionsRef.current, ...args);
-      setData(response ?? undefined);
+  const fn = useCallback(
+    async (...args: unknown[]) => {
+      setLoading(true);
       setError(null);
-      setLoading(false);
-      return response;
-    } catch (err) {
-      setError(err);
-      setLoading(false);
-      return null;
-    }
-  };
+
+      try {
+        const supabaseAccessToken = await session?.getToken({
+          template: "supabase",
+        });
+        const response = await cbRef.current(supabaseAccessToken!, optionsRef.current, ...args);
+        setData(response ?? undefined);
+        setError(null);
+        setLoading(false);
+        return response;
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+        return null;
+      }
+    },
+    [session]
+  );
 
   return { data, error, fn, loading };
 };
